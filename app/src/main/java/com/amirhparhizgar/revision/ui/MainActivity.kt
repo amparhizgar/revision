@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import com.amirhparhizgar.revision.ui.screen.TasksScreen
+import com.amirhparhizgar.revision.ui.screen.SettingScreen
 import com.amirhparhizgar.revision.ui.theme.RevisionTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
             RevisionTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    TasksScreen()
+                    SettingScreen()
                 }
             }
         }

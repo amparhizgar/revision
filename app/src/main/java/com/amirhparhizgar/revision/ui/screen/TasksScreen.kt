@@ -53,7 +53,7 @@ fun PreviewDropDown() {
 fun TaskFilterDropDown(items: List<String>, onSelected: (index: Int, project: String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var selectedIndex by remember { mutableStateOf(0) }
-    val textStyle = MaterialTheme.typography.h5.copy(color = MaterialTheme.colors.onSurface)
+    val textStyle = MaterialTheme.typography.h5
     val trailingIconColor =
         MaterialTheme.colors.onSurface.copy(alpha = TextFieldDefaults.IconOpacity)
 
