@@ -1,3 +1,5 @@
 <resources>
 	<string name="app_name">Revision</string>
+	<string name="plus_icon">plus icon</string>
+	<string name="new_tast">New task</string>
 </resources>
