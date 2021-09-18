@@ -1,4 +1,4 @@
-package com.amirhparhizgar.revision
+package com.amirhparhizgar.revision.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
