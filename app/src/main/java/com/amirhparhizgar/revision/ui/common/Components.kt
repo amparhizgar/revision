@@ -100,7 +100,10 @@ private fun CircleCheckbox(modifier: Modifier = Modifier, checked: Boolean = fal
 @Preview
 @Composable
 fun NewTaskButton(onClick: () -> Unit = {}) {
-    TextButton(onClick = onClick) {
+    TextButton(
+        onClick = onClick,
+        colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current)
+    ) {
         Icon(
             imageVector = MyAppIcons.Add,
             contentDescription = stringResource(id = R.string.plus_icon)

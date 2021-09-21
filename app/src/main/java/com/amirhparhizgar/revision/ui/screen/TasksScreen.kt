@@ -25,16 +25,16 @@ val mockTasks = listOf(
 @Composable
 fun TasksScreen() {
     Column {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TaskFilterDropDown(items = listOf("all", "something else"), onSelected = { _, _ -> })
-            NewTaskButton()
-        }
+        TopAppBar(title = {
+            TaskFilterDropDown(
+                items = listOf("all", "something else"),
+                onSelected = { _, _ -> })
+        },
+            actions = {
+                NewTaskButton()
+            }
+        )
+
         LazyColumn {
             items(mockTasks) { item: Task ->
                 TaskRow(title = item.name)
@@ -55,7 +55,7 @@ fun TaskFilterDropDown(items: List<String>, onSelected: (index: Int, project: St
     var selectedIndex by remember { mutableStateOf(0) }
     val textStyle = MaterialTheme.typography.h5
     val trailingIconColor =
-        MaterialTheme.colors.onSurface.copy(alpha = TextFieldDefaults.IconOpacity)
+        LocalContentColor.current.copy(alpha = TextFieldDefaults.IconOpacity)
 
     Box(
         modifier = Modifier

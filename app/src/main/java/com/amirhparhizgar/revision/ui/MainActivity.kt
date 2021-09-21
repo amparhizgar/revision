@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
                                 TasksScreen()
                             }
                             composable(profileScreen.destination) {
-                                SettingScreen() // todo change with ProfileScreen()
+                                ProfileScreen()
                             }
                             composable(settingScreen.destination) {
                                 SettingScreen()
