@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
                                 TasksScreen()
                             }
                             composable(profileScreen.destination) {
-                                ProfileScreen()
+                                ProfileScreen(goSettings = { navController.navigate(settingScreen.destination) })
                             }
                             composable(settingScreen.destination) {
                                 SettingScreen()

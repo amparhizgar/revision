@@ -1,27 +1,66 @@
 package com.amirhparhizgar.revision.ui.screen
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.amirhparhizgar.revision.R
+import com.amirhparhizgar.revision.model.BarChart
 import com.amirhparhizgar.revision.ui.common.MyAppIcons
 
 @Composable
-@Preview
-fun ProfileScreen() {
-    TopAppBar(title = {
-        Text(stringResource(id = R.string.profile))
-    },
-        actions = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = MyAppIcons.Settings, contentDescription = "settings button")
+@Preview(showBackground = true)
+fun ProfileScreen(goSettings: () -> Unit = {}) {
+    Column {
+        TopAppBar(title = {
+            Text(stringResource(id = R.string.profile))
+        },
+            actions = {
+                IconButton(onClick = goSettings) {
+                    Icon(imageVector = MyAppIcons.Settings, contentDescription = "settings button")
+                }
             }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        BarChart(BarChart.mock)
+    }
+}
+
+@Composable
+fun BarChart(chart: BarChart) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(200.dp), horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.Bottom
+    ) {
+        chart.barList.forEach { bar ->
+            DataBar(bar)
         }
-    )
-    // todo add content
+    }
+}
+
+@Composable
+fun DataBar(bar: BarChart.Bar) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .background(color = bar.color)
+                .width(50.dp)
+                .fillMaxHeight(bar.ratio)
+        )
+        Text(text = bar.count.toString(), color = bar.color)
+        Text(text = bar.label)
+    }
 }
