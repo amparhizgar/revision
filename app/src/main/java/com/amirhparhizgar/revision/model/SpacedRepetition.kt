@@ -1,10 +1,8 @@
 package com.amirhparhizgar.revision.model
 
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
+import java.util.*
 import java.util.logging.Logger
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 class SpacedRepetition {
@@ -34,7 +32,7 @@ class SpacedRepetition {
     }
 
     private fun calculateEasinessFactor(easiness: Float, quality: Int) =
-        Math.max(1.3, easiness + 0.1 - (5.0 - quality) * (0.08 + (5.0 - quality) * 0.02)).toFloat()
+        max(1.3, easiness + 0.1 - (5.0 - quality) * (0.08 + (5.0 - quality) * 0.02)).toFloat()
 
 
     private fun calculateRepetitions(quality: Int, cardRepetitions: Int) = if (quality < 3) {
@@ -49,17 +47,16 @@ class SpacedRepetition {
         else -> (cardInterval * easiness).roundToInt()
     }
 
-    private fun calculateNextPracticeDate(interval: Int): LocalDateTime {
+    private fun calculateNextPracticeDate(interval: Int): Calendar {
         val now = System.currentTimeMillis()
         val nextPracticeDate = now + dayInMs * interval
-        return LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(nextPracticeDate),
-            ZoneId.systemDefault()
-        )
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = nextPracticeDate
+        return calendar
     }
 
     private companion object {
-        private val dayInMs = Duration.ofDays(1).toMillis()
+        private const val dayInMs = 24 * 60 * 60 * 1000
         private val log: Logger = Logger.getLogger(SpacedRepetition::class.java.name)
     }
 
