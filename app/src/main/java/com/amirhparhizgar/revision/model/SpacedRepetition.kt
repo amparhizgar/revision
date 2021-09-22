@@ -5,7 +5,14 @@ import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-class SpacedRepetition {
+/**
+ * algorithm of Spaced Repetition.
+ * [details](https://www.supermemo.com/en/archives1990-2015/english/ol/sm2)
+ *
+ * note: this class is copied from [here](https://blog.mestwin.net/spaced-repetition-algorithm-implementation-in-kotlin)
+ * and has been modified
+ */
+object SpacedRepetition {
 
     fun calculateRepetition(card: Card, quality: Int): Card {
         validateQualityFactorInput(quality)
@@ -55,9 +62,9 @@ class SpacedRepetition {
         return calendar
     }
 
-    private companion object {
-        private const val dayInMs = 24 * 60 * 60 * 1000
-        private val log: Logger = Logger.getLogger(SpacedRepetition::class.java.name)
-    }
+
+    private const val dayInMs = 24 * 60 * 60 * 1000
+    private val log: Logger = Logger.getLogger(SpacedRepetition::class.java.name)
+
 
 }

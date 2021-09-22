@@ -6,9 +6,15 @@ import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.util.*
 
+/**
+ * Test cases for [SpacedRepetition]
+ *
+ * note: this class is copied from [here](https://blog.mestwin.net/spaced-repetition-algorithm-implementation-in-kotlin)
+ * and has been modified
+ */
 internal class SpacedRepetitionTest {
 
-    private val spacedRepetition = SpacedRepetition()
+    private val spacedRepetition = SpacedRepetition
 
     @Test
     fun `should send single answer with quality 5 and check returned card`() {
