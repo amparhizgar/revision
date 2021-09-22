@@ -1,13 +1,13 @@
 package com.amirhparhizgar.revision.ui.common
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +47,7 @@ fun TaskRow(
         )
         Text(date)
         CircleCheckbox(
-            modifier = Modifier.clickable(onClick = onDone),
+            onClick = onDone,
             checked = checked
         )
     }
@@ -63,9 +63,12 @@ private fun TaskProgressIndicator() {
     )
 }
 
-@Preview(name = "Circle check box")
 @Composable
-private fun CircleCheckbox(modifier: Modifier = Modifier, checked: Boolean = false) {
+private fun CircleCheckbox(
+    modifier: Modifier = Modifier,
+    checked: Boolean = false,
+    onClick: () -> Unit
+) {
     var cornerColor = Color.Gray
     val fillColorUnchecked = MaterialTheme.colors.surface
     val fillColorChecked = Color.Green
@@ -76,10 +79,13 @@ private fun CircleCheckbox(modifier: Modifier = Modifier, checked: Boolean = fal
     } else {
         fillColor = fillColorUnchecked
     }
+    val padding = 4.dp
     Box(
-        modifier = Modifier
+        modifier = modifier
+            .size(24.dp + padding * 2)
+            .padding(padding)
             .clip(CircleShape)
-            .size(24.dp)
+            .clickable(onClick = onClick)
             .background(cornerColor)
             .padding(2.dp)
             .clip(CircleShape)
@@ -124,6 +130,76 @@ fun TaskBottomNav(list: List<BottomNavTab>, selected: Int, onSelect: (Int) -> Un
                 alwaysShowLabel = false
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewBottomSheet() {
+    ReviewBottomSheet(onSelect = {}, listOf("1 day", "2 day", "3 day", "4 day"))
+}
+
+@Composable
+fun ReviewBottomSheet(onSelect: (Int) -> Unit, nextReviews: List<String>) {
+    if (nextReviews.size != 4) throw IllegalArgumentException("nextReviews must have 4 items")
+    Column {
+        0.let {
+            QualityRow(
+                modifier = Modifier.clickable { onSelect(it) },
+                icon = MyAppIcons.SentimentVeryDissatisfied,
+                tint = Color(0xFFB31111),
+                quality = R.string.relearn,
+                nextReview = nextReviews[it]
+            )
+        }
+        1.let {
+            QualityRow(
+                modifier = Modifier.clickable { onSelect(it) },
+                icon = MyAppIcons.SentimentDissatisfied,
+                tint = Color(0xFFFF5722),
+                quality = R.string.hard,
+                nextReview = nextReviews[it]
+            )
+        }
+        2.let {
+            QualityRow(
+                modifier = Modifier.clickable { onSelect(it) },
+                icon = MyAppIcons.SentimentSatisfied,
+                tint = Color(0xFF4CAF50),
+                quality = R.string.good,
+                nextReview = nextReviews[it]
+            )
+        }
+        3.let {
+            QualityRow(
+                modifier = Modifier.clickable { onSelect(it) },
+                icon = MyAppIcons.SentimentVerySatisfied,
+                tint = Color(0xFF1F39CA),
+                quality = R.string.easy,
+                nextReview = nextReviews[it]
+            )
+        }
+
+    }
+}
+
+@Composable
+private fun QualityRow(
+    modifier: Modifier,
+    icon: ImageVector,
+    tint: Color,
+    @StringRes quality: Int,
+    nextReview: String
+) {
+    Row(modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, tint = tint, contentDescription = null)
+        Text(
+            text = stringResource(id = quality),
+            Modifier
+                .weight(1F)
+                .padding(start = 16.dp)
+        )
+        Text(text = nextReview)
     }
 }
 

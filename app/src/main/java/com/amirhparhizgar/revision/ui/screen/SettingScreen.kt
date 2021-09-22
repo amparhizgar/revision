@@ -45,7 +45,7 @@ fun SettingScreen() {
                 )
                 TitleDetailSettingItem(
                     modifier = Modifier.clickable { /* todo add onClick*/ },
-                    title = stringResource(id = R.string.prefered_time),
+                    title = stringResource(id = R.string.preferred_time),
                     detail = "todo (8 am)",
                     icon = MyAppIcons.Schedule
                 )
