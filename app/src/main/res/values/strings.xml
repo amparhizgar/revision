@@ -13,7 +13,7 @@
 	<string name="dark_mode">Dark mode</string>
 	<string name="about">About</string>
 	<string name="version">Version %1$s</string>
-	<string name="prefered_time">Prefered time</string>
+	<string name="preferred_time">Preferred time</string>
 	<string name="theme">Theme</string>
 	<string name="automatic">Automatic</string>
 	<string name="light">Light</string>
@@ -22,4 +22,12 @@
 	<string name="tasks_tab">Tasks</string>
 	<string name="profile_tab">Profile</string>
 	<string name="profile">Profile</string>
+	<string name="add_task_title">Add new task</string>
+	<string name="save">Save</string>
+	<string name="project">Project</string>
+	<string name="task_name">Task name</string>
+	<string name="relearn">Relearn</string>
+	<string name="hard">Hard</string>
+	<string name="good">Good</string>
+	<string name="easy">Easy</string>
 </resources>

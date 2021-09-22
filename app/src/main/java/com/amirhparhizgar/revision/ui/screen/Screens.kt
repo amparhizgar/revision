@@ -17,3 +17,4 @@ val bottomTabList = listOf(
     profileScreen,
 )
 val settingScreen = Screen("setting")
+val addTaskScreen = Screen("add_task")
