@@ -1,6 +1,5 @@
 package com.amirhparhizgar.revision.model
 
-import java.util.*
 import java.util.logging.Logger
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -14,17 +13,17 @@ import kotlin.math.roundToInt
  */
 object SpacedRepetition {
 
-    fun calculateRepetition(card: Card, quality: Int): Card {
+    fun calculateRepetition(task: Task, quality: Int): Task {
         validateQualityFactorInput(quality)
 
-        val easiness = calculateEasinessFactor(card.easinessFactor, quality)
-        val repetitions = calculateRepetitions(quality, card.repetitions)
-        val interval = calculateInterval(repetitions, card.interval, easiness)
+        val easiness = calculateEasinessFactor(task.easinessFactor, quality)
+        val repetitions = calculateRepetitions(quality, task.repetitions)
+        val interval = calculateInterval(repetitions, task.interval, easiness)
 
-        val cardAfterRepetition = card.withUpdatedRepetitionProperties(
+        val cardAfterRepetition = task.withUpdatedRepetitionProperties(
             newRepetitions = repetitions,
             newEasinessFactor = easiness,
-            newNextRepetitionDate = calculateNextPracticeDate(interval),
+            newNextRepetitionMillis = calculateNextPracticeDate(interval),
             newInterval = interval
         )
         log.info(cardAfterRepetition.toString())
@@ -54,12 +53,9 @@ object SpacedRepetition {
         else -> (cardInterval * easiness).roundToInt()
     }
 
-    private fun calculateNextPracticeDate(interval: Int): Calendar {
+    private fun calculateNextPracticeDate(interval: Int): Long {
         val now = System.currentTimeMillis()
-        val nextPracticeDate = now + dayInMs * interval
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = nextPracticeDate
-        return calendar
+        return now + dayInMs * interval
     }
 
 

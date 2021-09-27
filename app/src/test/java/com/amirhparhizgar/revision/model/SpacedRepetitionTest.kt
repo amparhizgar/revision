@@ -4,7 +4,6 @@ import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
 import org.junit.Assert.assertThrows
 import org.junit.Test
-import java.util.*
 
 /**
  * Test cases for [SpacedRepetition]
@@ -25,7 +24,7 @@ internal class SpacedRepetitionTest {
         assertEquals(1, response.repetitions)
         assertEquals(1, response.interval)
         assertEquals(2.6.toFloat(), response.easinessFactor)
-        assertTrue(response.nextRepetition.isAfter(Calendar.getInstance()))
+        assertTrue(response.nextRepetitionMillis > System.currentTimeMillis())
     }
 
     @Test
@@ -37,7 +36,7 @@ internal class SpacedRepetitionTest {
         assertEquals(1, response.repetitions)
         assertEquals(1, response.interval)
         assertEquals(2.5.toFloat(), response.easinessFactor)
-        assertTrue(response.nextRepetition.isAfter(Calendar.getInstance()))
+        assertTrue(response.nextRepetitionMillis > System.currentTimeMillis())
     }
 
     @Test
@@ -49,7 +48,7 @@ internal class SpacedRepetitionTest {
         assertEquals(1, response.repetitions)
         assertEquals(1, response.interval)
         assertEquals(2.36.toFloat(), response.easinessFactor)
-        assertTrue(response.nextRepetition.isAfter(Calendar.getInstance()))
+        assertTrue(response.nextRepetitionMillis > System.currentTimeMillis())
     }
 
     @Test
@@ -61,7 +60,7 @@ internal class SpacedRepetitionTest {
         assertEquals(0, response.repetitions)
         assertEquals(1, response.interval)
         assertEquals(2.18.toFloat(), response.easinessFactor)
-        assertTrue(response.nextRepetition.isAfter(Calendar.getInstance()))
+        assertTrue(response.nextRepetitionMillis > System.currentTimeMillis())
     }
 
     @Test
@@ -73,7 +72,7 @@ internal class SpacedRepetitionTest {
         assertEquals(0, response.repetitions)
         assertEquals(1, response.interval)
         assertEquals(1.96.toFloat(), response.easinessFactor)
-        assertTrue(response.nextRepetition.isAfter(Calendar.getInstance()))
+        assertTrue(response.nextRepetitionMillis > System.currentTimeMillis())
     }
 
     @Test
@@ -89,13 +88,13 @@ internal class SpacedRepetitionTest {
         }
 
         val cardToRepeatToday =
-            cardsAfterRepetition.filter { it.nextRepetition.isBefore(Calendar.getInstance()) }
+            cardsAfterRepetition.filter { it.nextRepetitionMillis < System.currentTimeMillis() }
         assertTrue(cardToRepeatToday.isEmpty())
     }
 
     @Test
     fun `should throw an exception if the user's quality of repetition response is invalid`() {
-        val flashCard = getCard(repetitionDate = Calendar.getInstance().minusDays(1))
+        val flashCard = getCard(repetitionDate = System.currentTimeMillis() - dayInMs)
 
         assertThrows(IllegalArgumentException::class.java) {
             spacedRepetition.calculateRepetition(flashCard, 6)
@@ -112,31 +111,24 @@ internal class SpacedRepetitionTest {
     }
 
     private fun getCard(
-        front: String = "🍎",
-        back: String = "Apple",
-        repetitionDate: Calendar = Calendar.getInstance()
-    ) = Card(
-        frontSide = front,
-        backSide = back,
-        nextRepetition = repetitionDate
+        title: String = "title",
+        repetitionDate: Long = System.currentTimeMillis()
+    ) = Task(
+        id = -1,
+        name = title,
+        project = "project",
+        nextRepetitionMillis = repetitionDate
     )
-
-    private fun Calendar.isAfter(calendar: Calendar) = this.timeInMillis > calendar.timeInMillis
-    private fun Calendar.isBefore(calendar: Calendar) = this.timeInMillis < calendar.timeInMillis
-    private fun Calendar.plusDays(days: Int): Calendar {
-        add(Calendar.DAY_OF_YEAR, days)
-        return this
-    }
-
-    private fun Calendar.minusDays(days: Int): Calendar = this.plusDays(-days)
 
 
     private fun getDeckWithSixCards() = listOf(
         getCard(),
-        getCard(repetitionDate = Calendar.getInstance().minusDays(1)),
-        getCard(repetitionDate = Calendar.getInstance().minusDays(2)),
-        getCard(repetitionDate = Calendar.getInstance().plusDays(2)),
-        getCard(repetitionDate = Calendar.getInstance().plusDays(1)),
-        getCard(repetitionDate = Calendar.getInstance().minusDays(3))
+        getCard(repetitionDate = System.currentTimeMillis() - dayInMs),
+        getCard(repetitionDate = System.currentTimeMillis() - dayInMs * 2),
+        getCard(repetitionDate = System.currentTimeMillis() + dayInMs * 2),
+        getCard(repetitionDate = System.currentTimeMillis() + dayInMs),
+        getCard(repetitionDate = System.currentTimeMillis() - dayInMs * 3)
     )
+
+    private val dayInMs = 24 * 60 * 60 * 1000
 }
