@@ -6,10 +6,20 @@ data class Task(
     val id: Int = Util.uuid(),
     val name: String,
     val project: String,
-    val reviewTimes: Int = 0,
-    /**
-     * last review time and date.
-     * in format of milliseconds since epoch
-     */
-    val lastReview: Long = System.currentTimeMillis(),
-)
+    val nextRepetitionMillis: Long = System.currentTimeMillis(),
+    val repetitions: Int = 0,
+    val easinessFactor: Float = 2.5f,
+    val interval: Int = 1
+) {
+    fun withUpdatedRepetitionProperties(
+        newRepetitions: Int,
+        newEasinessFactor: Float,
+        newNextRepetitionMillis: Long,
+        newInterval: Int
+    ) = copy(
+        repetitions = newRepetitions,
+        easinessFactor = newEasinessFactor,
+        nextRepetitionMillis = newNextRepetitionMillis,
+        interval = newInterval
+    )
+}
