@@ -17,7 +17,9 @@ import androidx.navigation.compose.rememberNavController
 import com.amirhparhizgar.revision.ui.common.TaskBottomNav
 import com.amirhparhizgar.revision.ui.screen.*
 import com.amirhparhizgar.revision.ui.theme.RevisionTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

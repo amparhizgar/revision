@@ -30,4 +30,10 @@
 	<string name="hard">Hard</string>
 	<string name="good">Good</string>
 	<string name="easy">Easy</string>
+	<string name="daily_reminder_channel_name">Daily reminding</string>
+	<string name="daily_reminder_channel_description">Receive daily notifications to remind you tasks is due for today (if any)</string>
+	<string name="new_reviews_due_today">New reviews is due for today</string>
+	<string name="one_task_due">%s is due for today!</string>
+	<string name="two_task_due">%s and %s are due for today!</string>
+	<string name="more_task_due">%s, %s, and more are due for today!</string>
 </resources>
