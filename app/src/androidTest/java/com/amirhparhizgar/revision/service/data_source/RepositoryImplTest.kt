@@ -94,6 +94,34 @@ class RepositoryImplTest {
         }
     }
 
+    @Test
+    fun getTasksForToday() {
+        runBlocking {
+            repository.saveTask(
+                Task(
+                    name = "today", project = "project",
+                    nextRepetitionMillis = System.currentTimeMillis()
+                )
+            )
+            repository.saveTask(
+                Task(
+                    name = "tomorrow", project = "project",
+                    nextRepetitionMillis = System.currentTimeMillis() + oneDayMillis
+                )
+            )
+            repository.saveTask(
+                Task(
+                    name = "yesterday", project = "project",
+                    nextRepetitionMillis = System.currentTimeMillis() - oneDayMillis
+                )
+            )
+        }
+        runBlocking {
+            val todayTasks = repository.getTasksForToday().first()
+            assertThat(todayTasks.map { it.name }).containsExactly("today")
+        }
+    }
+
     private fun createDummyTask(
         id: Int? = null,
         name: String = "dummy name",
@@ -104,5 +132,9 @@ class RepositoryImplTest {
             Task(name = name, project = project, interval = interval)
         else
             Task(id = id, name = name, project = project, interval = interval)
+    }
+
+    companion object {
+        const val oneDayMillis = 24 * 60 * 60 * 1000
     }
 }
