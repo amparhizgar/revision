@@ -14,7 +14,7 @@ class SettingStore @Inject constructor(val dataStore: DataStore<Preferences>) {
     inner class TodoReminding : SimpleSetting<Boolean>(dataStore) {
         override val key: Preferences.Key<Boolean>
             get() = booleanPreferencesKey("todo reminding enable")
-        override val default: Boolean
+        public override val default: Boolean
             get() = false
     }
 
