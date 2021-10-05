@@ -13,12 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.amirhparhizgar.revision.model.Task
 import com.amirhparhizgar.revision.ui.common.MyAppIcons
 import com.amirhparhizgar.revision.ui.common.NewTaskButton
 import com.amirhparhizgar.revision.ui.common.ReviewBottomSheet
 import com.amirhparhizgar.revision.ui.common.TaskRow
+import com.amirhparhizgar.revision.viewmodel.AllTasksViewModel
 import kotlinx.coroutines.launch
+
 
 val mockTasks = listOf(
     Task(1, "item 1", "", 2, 35444545),
@@ -28,7 +31,7 @@ val mockTasks = listOf(
 @OptIn(ExperimentalMaterialApi::class)
 @Preview(showBackground = true)
 @Composable
-fun TasksScreen() {
+fun TasksScreen(tasksViewModel: AllTasksViewModel = hiltViewModel()) {
     var sheetOpenedFor by remember { mutableStateOf(-1) }
     val onSheetClosed = { sheetOpenedFor = -1 }
     val bottomSheetState =
@@ -37,6 +40,7 @@ fun TasksScreen() {
                 onSheetClosed()
             return@rememberModalBottomSheetState true
         })
+    val taskListState = tasksViewModel.tasks.collectAsState(initial = listOf())
     val scope = rememberCoroutineScope()
 
     ModalBottomSheetLayout(
@@ -64,7 +68,7 @@ fun TasksScreen() {
             )
 
             LazyColumn {
-                itemsIndexed(mockTasks) { index, item: Task ->
+                itemsIndexed(taskListState.value) { index, item: Task ->
                     TaskRow(
                         title = item.name, onDone = {
                             scope.launch {
