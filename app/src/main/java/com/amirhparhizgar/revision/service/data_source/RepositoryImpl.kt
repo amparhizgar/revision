@@ -15,19 +15,14 @@ class RepositoryImpl @Inject constructor(taskDatabase: TaskDatabase) : Repositor
 
     override suspend fun getTask(id: Int): Task = dao.getTask(id)
 
-    override fun getTasksForToday(): Flow<List<Task>> {
+    override fun getTodoTasks(): Flow<List<Task>> {
         val calendar = Calendar.getInstance()
-        calendar.apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-        }
-        val startingMillis = calendar.timeInMillis
         calendar.apply {
             set(Calendar.HOUR_OF_DAY, 24)
             set(Calendar.MINUTE, 0)
         }
         val endingMillis = calendar.timeInMillis
-        return dao.getTaskBetweenTimes(startingMillis, endingMillis)
+        return dao.getTaskBetweenTimes(1, endingMillis)
     }
 
     override fun deleteTask(id: Int) {

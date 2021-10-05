@@ -12,7 +12,7 @@ open class BaseTaskViewModel constructor(protected val repository: Repository) :
 
     fun getTasks(onlyTodo: Boolean): Flow<List<Task>> {
         return if (onlyTodo)
-            repository.getTasksForToday()
+            repository.getTodoTasks()
         else
             repository.getAllTasks()
     }

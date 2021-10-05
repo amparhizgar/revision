@@ -117,8 +117,8 @@ class RepositoryImplTest {
             )
         }
         runBlocking {
-            val todayTasks = repository.getTasksForToday().first()
-            assertThat(todayTasks.map { it.name }).containsExactly("today")
+            val todayTasks = repository.getTodoTasks().first()
+            assertThat(todayTasks.map { it.name }).containsExactly("yesterday", "today")
         }
     }
 

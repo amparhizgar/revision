@@ -61,7 +61,7 @@ class NotificationManager @Inject constructor(
     }
 
     private suspend fun notificationContent(): String? {
-        val tasks = repository.getTasksForToday().first()
+        val tasks = repository.getTodoTasks().first()
         return when (tasks.size) {
             0 -> null
             1 -> context.getString(R.string.one_task_due, tasks[0].name)
