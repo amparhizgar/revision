@@ -13,7 +13,7 @@ class RepositoryImpl @Inject constructor(taskDatabase: TaskDatabase) : Repositor
 
     override fun getAllTasks(): Flow<List<Task>> = dao.getAllTasks()
 
-    override fun getTask(id: Int): Task = dao.getTask(id)
+    override suspend fun getTask(id: Int): Task = dao.getTask(id)
 
     override fun getTasksForToday(): Flow<List<Task>> {
         val calendar = Calendar.getInstance()

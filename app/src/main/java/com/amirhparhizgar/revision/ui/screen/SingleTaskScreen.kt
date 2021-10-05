@@ -6,19 +6,21 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Category
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.amirhparhizgar.revision.R
-import com.amirhparhizgar.revision.model.Task
 import com.amirhparhizgar.revision.ui.common.MyAppIcons
+import com.amirhparhizgar.revision.viewmodel.SingleTaskViewModel
 
 @Composable
-fun AddTaskScreen(onBack: () -> Unit, onSave: (Task) -> Unit) {
+fun SingleTaskScreen(
+    onBack: () -> Unit,
+    viewModel: SingleTaskViewModel = hiltViewModel()
+) {
     Scaffold(topBar = {
         TopAppBar(
             navigationIcon = {
@@ -33,11 +35,9 @@ fun AddTaskScreen(onBack: () -> Unit, onSave: (Task) -> Unit) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             val paddingStart = 45.dp
-            val (name, onSetName) = remember { mutableStateOf("") }
-            val (project, onSetProject) = remember { mutableStateOf("") }
             StandardTextField(
-                modifier = Modifier.padding(start = paddingStart), text = name,
-                onSetText = onSetName, label = R.string.task_name
+                modifier = Modifier.padding(start = paddingStart), text = viewModel.taskName.value,
+                onSetText = viewModel::setTaskName, label = R.string.task_name
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
@@ -45,10 +45,18 @@ fun AddTaskScreen(onBack: () -> Unit, onSave: (Task) -> Unit) {
                     imageVector = MyAppIcons.Category,
                     contentDescription = "project icon"
                 )
-                StandardTextField(Modifier, project, onSetProject, R.string.project)
+                StandardTextField(
+                    Modifier,
+                    viewModel.project.value,
+                    viewModel::setProject,
+                    R.string.project
+                )
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                Button(onClick = { onSave(Task(name = name, project = project)) }) {
+                Button(onClick = {
+                    viewModel.save()
+                    onBack()
+                }) {
                     Text(text = stringResource(id = R.string.save))
                 }
             }
@@ -74,5 +82,5 @@ private fun StandardTextField(
 @Preview
 @Composable
 private fun PreviewAddTask() {
-    AddTaskScreen({}, {})
+    SingleTaskScreen({})
 }

@@ -29,9 +29,11 @@ val mockTasks = listOf(
 )
 
 @OptIn(ExperimentalMaterialApi::class)
-@Preview(showBackground = true)
 @Composable
-fun TasksScreen(tasksViewModel: AllTasksViewModel = hiltViewModel()) {
+fun TasksScreen(
+    goSingleScreen: (Task?) -> Unit,
+    tasksViewModel: AllTasksViewModel = hiltViewModel()
+) {
     var sheetOpenedFor by remember { mutableStateOf(-1) }
     val onSheetClosed = { sheetOpenedFor = -1 }
     val bottomSheetState =
@@ -63,13 +65,16 @@ fun TasksScreen(tasksViewModel: AllTasksViewModel = hiltViewModel()) {
                     onSelected = { _, _ -> })
             },
                 actions = {
-                    NewTaskButton()
+                    NewTaskButton {
+                        goSingleScreen(null)
+                    }
                 }
             )
 
             LazyColumn {
                 itemsIndexed(taskListState.value) { index, item: Task ->
                     TaskRow(
+                        modifier = Modifier.clickable { goSingleScreen(item) },
                         title = item.name, onDone = {
                             scope.launch {
                                 sheetOpenedFor = index
@@ -82,6 +87,12 @@ fun TasksScreen(tasksViewModel: AllTasksViewModel = hiltViewModel()) {
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TasksScreenPreview() {
+    TasksScreen(goSingleScreen = {})
 }
 
 @Preview(showBackground = true)

@@ -9,11 +9,11 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.*
+import com.amirhparhizgar.revision.model.Task
 import com.amirhparhizgar.revision.ui.common.TaskBottomNav
 import com.amirhparhizgar.revision.ui.screen.*
 import com.amirhparhizgar.revision.ui.theme.RevisionTheme
@@ -54,10 +54,27 @@ class MainActivity : ComponentActivity() {
                             startDestination = startDest
                         ) {
                             composable(todoScreen.destination) {
-                                TodoScreen()
+                                TodoScreen(goSingleScreen = {
+                                    goSingleTaskScreen(it, navController)
+                                })
                             }
-                            composable(taskScreen.destination) {
-                                TasksScreen()
+                            composable(
+                                singleTaskScreen.destination + "?id={id}",
+                                arguments = listOf(navArgument("id") {
+                                    type = NavType.IntType
+                                    defaultValue = -1
+                                })
+                            ) {
+                                SingleTaskScreen(onBack = {
+                                    navController.popBackStack()
+                                })
+                            }
+                            composable(
+                                taskScreen.destination
+                            ) {
+                                TasksScreen(goSingleScreen = {
+                                    goSingleTaskScreen(it, navController)
+                                })
                             }
                             composable(profileScreen.destination) {
                                 ProfileScreen(goSettings = { navController.navigate(settingScreen.destination) })
@@ -70,6 +87,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun goSingleTaskScreen(
+        task: Task?,
+        navController: NavHostController
+    ) {
+        if (task == null)
+            navController.navigate(singleTaskScreen.destination)
+        else
+            navController.navigate(singleTaskScreen.destination + "?id=" + task.id)
     }
 
     private fun tabIndexFromRout(rout: String?): Int {

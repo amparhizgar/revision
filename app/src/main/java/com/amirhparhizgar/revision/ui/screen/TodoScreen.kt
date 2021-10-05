@@ -1,26 +1,30 @@
 package com.amirhparhizgar.revision.ui.screen
 
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.amirhparhizgar.revision.R
 import com.amirhparhizgar.revision.model.Task
 import com.amirhparhizgar.revision.ui.common.NewTaskButton
 import com.amirhparhizgar.revision.ui.common.ReviewBottomSheet
 import com.amirhparhizgar.revision.ui.common.TaskRow
+import com.amirhparhizgar.revision.viewmodel.AllTasksViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
 @Composable
-fun TodoScreen() {
+fun TodoScreen(
+    goSingleScreen: (Task?) -> Unit,
+    tasksViewModel: AllTasksViewModel = hiltViewModel()
+) {
     var sheetOpenedFor by remember { mutableStateOf(-1) }
     val onSheetClosed = { sheetOpenedFor = -1 }
     val bottomSheetState =
@@ -49,12 +53,15 @@ fun TodoScreen() {
                 Text(stringResource(id = R.string.to_do), style = MaterialTheme.typography.h5)
             },
                 actions = {
-                    NewTaskButton()
+                    NewTaskButton {
+                        goSingleScreen(null)
+                    }
                 }
             )
             LazyColumn {
                 itemsIndexed(mockTasks) { index, item: Task ->
                     TaskRow(
+                        modifier = Modifier.clickable { goSingleScreen(item) },
                         title = item.name, onDone = {
                             scope.launch {
                                 sheetOpenedFor = index
@@ -67,4 +74,10 @@ fun TodoScreen() {
             }
         }
     }
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@androidx.compose.runtime.Composable
+fun TodoScreenPreview() {
+    TodoScreen(goSingleScreen = {})
 }
