@@ -16,14 +16,14 @@ import com.amirhparhizgar.revision.model.Task
 import com.amirhparhizgar.revision.ui.common.NewTaskButton
 import com.amirhparhizgar.revision.ui.common.ReviewBottomSheet
 import com.amirhparhizgar.revision.ui.common.TaskRow
-import com.amirhparhizgar.revision.viewmodel.AllTasksViewModel
+import com.amirhparhizgar.revision.viewmodel.TodoViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TodoScreen(
     goSingleScreen: (Task?) -> Unit,
-    tasksViewModel: AllTasksViewModel = hiltViewModel()
+    todoViewModel: TodoViewModel = hiltViewModel()
 ) {
     var sheetOpenedFor by remember { mutableStateOf(-1) }
     val onSheetClosed = { sheetOpenedFor = -1 }
@@ -34,6 +34,7 @@ fun TodoScreen(
             return@rememberModalBottomSheetState true
         })
     val scope = rememberCoroutineScope()
+    val tasksState = todoViewModel.tasks.collectAsState(initial = emptyList())
 
     ModalBottomSheetLayout(
         sheetState = bottomSheetState,
@@ -59,7 +60,7 @@ fun TodoScreen(
                 }
             )
             LazyColumn {
-                itemsIndexed(mockTasks) { index, item: Task ->
+                itemsIndexed(tasksState.value) { index, item: Task ->
                     TaskRow(
                         modifier = Modifier.clickable { goSingleScreen(item) },
                         title = item.name, onDone = {
