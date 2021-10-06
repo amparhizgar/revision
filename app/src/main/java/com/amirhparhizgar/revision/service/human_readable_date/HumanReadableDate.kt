@@ -44,6 +44,9 @@ class HumanReadableDate @Inject constructor(val strings: DateTranslatableStrings
         }
     }
 
+    fun diffDays(milliseconds: Long): Int =
+        diffDays(Calendar.getInstance().apply { timeInMillis = milliseconds })
+
     private fun diffDays(calendar: Calendar): Int {
         val start = Calendar.getInstance().apply { timeInMillis = timeProvider() }
         start[Calendar.HOUR_OF_DAY] = 0

@@ -1,12 +1,8 @@
 package com.amirhparhizgar.revision.ui.screen
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.amirhparhizgar.revision.R
@@ -14,7 +10,7 @@ import com.amirhparhizgar.revision.model.SpacedRepetition
 import com.amirhparhizgar.revision.model.Task
 import com.amirhparhizgar.revision.ui.common.NewTaskButton
 import com.amirhparhizgar.revision.ui.common.ReviewBottomSheet
-import com.amirhparhizgar.revision.ui.common.TaskRow
+import com.amirhparhizgar.revision.ui.common.TaskList
 import com.amirhparhizgar.revision.viewmodel.TodoViewModel
 import kotlinx.coroutines.launch
 
@@ -24,7 +20,7 @@ fun TodoScreen(
     goSingleScreen: (Task?) -> Unit,
     todoViewModel: TodoViewModel = hiltViewModel()
 ) {
-    var sheetOpenedFor by remember { mutableStateOf<Task?>(null) }
+    var sheetOpenedFor = remember { mutableStateOf<Task?>(null) }
     val bottomSheetState =
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
@@ -37,7 +33,7 @@ fun TodoScreen(
                 onSelect = { qualityIndex ->
                     if (sheetOpenedFor != null) {
                         todoViewModel.onDone(
-                            sheetOpenedFor!!.id,
+                            sheetOpenedFor.value!!.id,
                             SpacedRepetition.Quality.list[qualityIndex]
                         )
                         scope.launch {
@@ -45,7 +41,7 @@ fun TodoScreen(
                         }
                     }
                 },
-                nextReviews = sheetOpenedFor?.let { todoViewModel.getNextReviewDates(it) }
+                nextReviews = sheetOpenedFor.value?.let { todoViewModel.getNextReviewDates(it) }
                     ?: listOf("", "", "", "")
             )
         }
@@ -60,20 +56,8 @@ fun TodoScreen(
                     }
                 }
             )
-            LazyColumn {
-                itemsIndexed(taskListState.value) { _, item: Task ->
-                    TaskRow(
-                        modifier = Modifier.clickable { goSingleScreen(item) },
-                        title = item.name, onDone = {
-                            scope.launch {
-                                sheetOpenedFor = item
-                                bottomSheetState.show()
-                            }
-                        },
-                        checked = sheetOpenedFor == item && (bottomSheetState.targetValue != ModalBottomSheetValue.Hidden)
-                    )
-                }
-            }
+
+            TaskList(taskListState, goSingleScreen, scope, sheetOpenedFor, bottomSheetState)
         }
     }
 }

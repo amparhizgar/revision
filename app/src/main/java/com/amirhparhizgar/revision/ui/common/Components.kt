@@ -4,11 +4,15 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,6 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.amirhparhizgar.revision.R
 import com.amirhparhizgar.revision.model.BottomNavTab
+import com.amirhparhizgar.revision.model.Task
+import com.amirhparhizgar.revision.model.TaskOldness
+import com.amirhparhizgar.revision.model.TaskUIWrapper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 val MyAppIcons = Icons.Rounded
 
@@ -26,7 +35,7 @@ val MyAppIcons = Icons.Rounded
 @Composable
 fun TaskRow(
     modifier: Modifier = Modifier,
-    level: Int = 1,
+    oldness: TaskOldness = TaskOldness.Unseen,
     date: String = "Sun",
     title: String = "title",
     onDone: () -> Unit = {},
@@ -40,7 +49,7 @@ fun TaskRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        TaskProgressIndicator()
+        TaskProgressIndicator(oldness)
         Text(
             text = title, modifier = Modifier.weight(1F),
             style = MaterialTheme.typography.h5
@@ -54,10 +63,10 @@ fun TaskRow(
 }
 
 @Composable
-private fun TaskProgressIndicator() {
+private fun TaskProgressIndicator(oldness: TaskOldness) {
     Box(
         modifier = Modifier
-            .background(Color.Green)
+            .background(oldness.color())
             .width(4.dp)
             .fillMaxHeight()
     )
@@ -200,6 +209,34 @@ private fun QualityRow(
                 .padding(start = 16.dp)
         )
         Text(text = nextReview)
+    }
+}
+
+
+@ExperimentalMaterialApi
+@Composable
+fun TaskList(
+    taskListState: State<List<TaskUIWrapper>>,
+    goSingleScreen: (Task?) -> Unit,
+    scope: CoroutineScope,
+    sheetOpenedFor: MutableState<Task?>,
+    bottomSheetState: ModalBottomSheetState
+) {
+    LazyColumn {
+        itemsIndexed(taskListState.value) { _, wrapper: TaskUIWrapper ->
+            val task = wrapper.task
+            TaskRow(
+                modifier = Modifier.clickable { goSingleScreen(task) },
+                title = wrapper.task.name, onDone = {
+                    scope.launch {
+                        sheetOpenedFor.value = task
+                        bottomSheetState.show()
+                    }
+                }, date = wrapper.due,
+                oldness = wrapper.oldness,
+                checked = sheetOpenedFor.value == task && (bottomSheetState.targetValue != ModalBottomSheetValue.Hidden)
+            )
+        }
     }
 }
 

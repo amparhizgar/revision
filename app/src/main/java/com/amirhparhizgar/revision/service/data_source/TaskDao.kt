@@ -25,8 +25,8 @@ interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveTask(task: Task)
 
-    @Query("SELECT COUNT(*) FROM tasks WHERE :min <= interval AND interval < :max")
-    fun getIntervalCount(min: Int, max: Int): Int
+    @Query("SELECT COUNT(*) FROM tasks WHERE :min <= interval AND interval <= :max")
+    fun getIntervalCountInclusive(min: Int, max: Int): Int
 
     @Query("SELECT DISTINCT project FROM tasks WHERE project LIKE :pattern")
     fun getDistinctProjectsLike(pattern: String): List<String>

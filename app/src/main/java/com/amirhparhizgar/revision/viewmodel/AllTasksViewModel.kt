@@ -1,6 +1,6 @@
 package com.amirhparhizgar.revision.viewmodel
 
-import com.amirhparhizgar.revision.model.Task
+import com.amirhparhizgar.revision.model.TaskUIWrapper
 import com.amirhparhizgar.revision.service.data_source.Repository
 import com.amirhparhizgar.revision.service.human_readable_date.HumanReadableDate
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +14,7 @@ class AllTasksViewModel @Inject constructor(
 ) :
     BaseTaskViewModel(repository, humanReadableDate) {
 
-    val tasks: Flow<List<Task>>
+    val tasks: Flow<List<TaskUIWrapper>>
         get() {
             return getTasks(false)
         }

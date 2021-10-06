@@ -61,21 +61,25 @@ class RepositoryImplTest {
         runBlocking {
             repeat(1) {
                 repository.saveTask(createDummyTask(interval = TaskOldness.Unseen.range.first))
+                repository.saveTask(createDummyTask(interval = TaskOldness.Unseen.range.last))
             }
             repeat(2) {
                 repository.saveTask(createDummyTask(interval = TaskOldness.Learning.range.first))
+                repository.saveTask(createDummyTask(interval = TaskOldness.Learning.range.last))
             }
             repeat(4) {
                 repository.saveTask(createDummyTask(interval = TaskOldness.Young.range.first))
+                repository.saveTask(createDummyTask(interval = TaskOldness.Young.range.last))
             }
             repeat(8) {
                 repository.saveTask(createDummyTask(interval = TaskOldness.Mature.range.first))
+                repository.saveTask(createDummyTask(interval = TaskOldness.Mature.range.last))
             }
         }
-        assertThat(repository.getOldnessCount(TaskOldness.Unseen)).isEqualTo(1)
-        assertThat(repository.getOldnessCount(TaskOldness.Learning)).isEqualTo(2)
-        assertThat(repository.getOldnessCount(TaskOldness.Young)).isEqualTo(4)
-        assertThat(repository.getOldnessCount(TaskOldness.Mature)).isEqualTo(8)
+        assertThat(repository.getOldnessCount(TaskOldness.Unseen)).isEqualTo(2)
+        assertThat(repository.getOldnessCount(TaskOldness.Learning)).isEqualTo(4)
+        assertThat(repository.getOldnessCount(TaskOldness.Young)).isEqualTo(8)
+        assertThat(repository.getOldnessCount(TaskOldness.Mature)).isEqualTo(16)
     }
 
     @Test

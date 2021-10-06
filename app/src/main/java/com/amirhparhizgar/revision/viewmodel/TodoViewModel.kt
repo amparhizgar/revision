@@ -1,7 +1,7 @@
 package com.amirhparhizgar.revision.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import com.amirhparhizgar.revision.model.Task
+import com.amirhparhizgar.revision.model.TaskUIWrapper
 import com.amirhparhizgar.revision.service.data_source.Repository
 import com.amirhparhizgar.revision.service.human_readable_date.HumanReadableDate
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +14,7 @@ class TodoViewModel @Inject constructor(
     humanReadableDate: HumanReadableDate,
     savedStateHandle: SavedStateHandle
 ) : BaseTaskViewModel(repository, humanReadableDate) {
-    val tasks: Flow<List<Task>>
+    val tasks: Flow<List<TaskUIWrapper>>
         get() {
             return getTasks(true)
         }
