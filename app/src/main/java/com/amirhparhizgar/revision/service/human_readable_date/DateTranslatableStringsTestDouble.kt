@@ -2,7 +2,7 @@ package com.amirhparhizgar.revision.service.human_readable_date
 
 import java.util.*
 
-open class HumanReadableStringsTestDouble : HumanReadableStrings {
+open class DateTranslatableStringsTestDouble : DateTranslatableStrings {
     override val today: String
         get() = "Today"
     override val oneDay: String

@@ -7,7 +7,7 @@ import org.junit.Test
 class HumanReadableDateTest {
 
     private lateinit var humanReadableDate: HumanReadableDate
-    private val strings = HumanReadableStringsTestDouble()
+    private val strings = DateTranslatableStringsTestDouble()
 
     @Before
     fun setUp() {

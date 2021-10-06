@@ -13,6 +13,15 @@ import kotlin.math.roundToInt
  */
 object SpacedRepetition {
 
+    object Quality {
+        const val Relearn = 1
+        const val Hard = 3
+        const val Good = 4
+        const val Easy = 5
+
+        val list = listOf(Relearn, Hard, Good, Easy)
+    }
+
     fun calculateRepetition(task: Task, quality: Int): Task {
         validateQualityFactorInput(quality)
 

@@ -2,7 +2,7 @@ package com.amirhparhizgar.revision.service.human_readable_date
 
 import java.util.*
 
-interface HumanReadableStrings {
+interface DateTranslatableStrings {
     val today: String
     val oneDay: String
     val twoDays: String

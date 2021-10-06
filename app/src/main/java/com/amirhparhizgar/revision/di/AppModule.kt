@@ -12,6 +12,8 @@ import androidx.room.Room
 import com.amirhparhizgar.revision.service.data_source.Repository
 import com.amirhparhizgar.revision.service.data_source.RepositoryImpl
 import com.amirhparhizgar.revision.service.data_source.TaskDatabase
+import com.amirhparhizgar.revision.service.human_readable_date.DateTranslatableStrings
+import com.amirhparhizgar.revision.service.human_readable_date.DateTranslatableStringsImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -29,6 +31,9 @@ import javax.inject.Singleton
 abstract class AppModule {
     @Binds
     abstract fun bindRepository(repository: RepositoryImpl): Repository
+
+    @Binds
+    abstract fun bindDateTranslatableStrings(impl: DateTranslatableStringsImpl): DateTranslatableStrings
 
     companion object {
         @Provides

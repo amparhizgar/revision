@@ -6,7 +6,7 @@ import javax.inject.Inject
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 
-class HumanReadableDate @Inject constructor(val strings: HumanReadableStrings) {
+class HumanReadableDate @Inject constructor(val strings: DateTranslatableStrings) {
 
     private var timeProvider: () -> Long = System::currentTimeMillis
     fun setTimeProvider(provider: () -> Long) {
@@ -34,10 +34,10 @@ class HumanReadableDate @Inject constructor(val strings: HumanReadableStrings) {
                 }
             else ->
                 when {
-                    diffDays <= -2 -> strings.daysAgo.format(abs(diffDays.absoluteValue.month))
+                    diffDays <= -2 -> strings.daysAgo.format(abs(diffDays.absoluteValue))
                     diffDays == -1 -> strings.oneDayAgo
-                    diffDays >= 3 -> strings.days.format(diffDays.month)
-                    diffDays >= 2 -> strings.twoDays.format(diffDays.month)
+                    diffDays >= 3 -> strings.days.format(diffDays)
+                    diffDays >= 2 -> strings.twoDays.format(diffDays)
                     diffDays >= 1 -> strings.oneDay
                     else -> strings.today
                 }
