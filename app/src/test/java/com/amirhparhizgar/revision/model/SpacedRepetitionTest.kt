@@ -110,6 +110,21 @@ internal class SpacedRepetitionTest {
         }
     }
 
+    @Test
+    fun overflowingTest() {
+        val badTask = Task(
+            name = "name",
+            project = "project",
+            nextRepetitionMillis = 1634813864750,
+            repetitions = 3,
+            easinessFactor = 2.5f,
+            interval = 15
+        )
+        val afterTask = SpacedRepetition.calculateRepetition(badTask, SpacedRepetition.Quality.Hard)
+        assertTrue(afterTask.nextRepetitionMillis > System.currentTimeMillis())
+        println(afterTask)
+    }
+
     private fun getCard(
         title: String = "title",
         repetitionDate: Long = System.currentTimeMillis()

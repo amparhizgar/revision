@@ -68,7 +68,7 @@ object SpacedRepetition {
     }
 
 
-    private const val dayInMs = 24 * 60 * 60 * 1000
+    private const val dayInMs: Long = 24 * 60 * 60 * 1000L
     private val log: Logger = Logger.getLogger(SpacedRepetition::class.java.name)
 
 
