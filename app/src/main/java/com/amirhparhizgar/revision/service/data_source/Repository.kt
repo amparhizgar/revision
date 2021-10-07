@@ -12,4 +12,5 @@ interface Repository {
     suspend fun saveTask(task: Task)
     fun getOldnessCount(oldness: TaskOldness): Int
     fun getProjectsStartWith(start: String): List<String>
+    fun getProjects(): Flow<List<String>>
 }

@@ -30,4 +30,7 @@ interface TaskDao {
 
     @Query("SELECT DISTINCT project FROM tasks WHERE project LIKE :pattern")
     fun getDistinctProjectsLike(pattern: String): List<String>
+
+    @Query("SELECT DISTINCT project FROM tasks")
+    fun getProjects(): Flow<List<String>>
 }

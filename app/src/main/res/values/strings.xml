@@ -36,4 +36,5 @@
 	<string name="one_task_due">%s is due for today!</string>
 	<string name="two_task_due">%s and %s are due for today!</string>
 	<string name="more_task_due">%s, %s, and more are due for today!</string>
+	<string name="all_projects">All</string>
 </resources>

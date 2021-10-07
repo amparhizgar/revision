@@ -3,6 +3,7 @@ package com.amirhparhizgar.revision.service.data_source
 import com.amirhparhizgar.revision.model.Task
 import com.amirhparhizgar.revision.model.TaskOldness
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.util.*
 import javax.inject.Inject
 
@@ -37,5 +38,9 @@ class RepositoryImpl @Inject constructor(taskDatabase: TaskDatabase) : Repositor
 
     override fun getProjectsStartWith(start: String): List<String> {
         return dao.getDistinctProjectsLike("$start%")
+    }
+
+    override fun getProjects(): Flow<List<String>> {
+        return dao.getProjects().map { list -> list.filter { project -> project != "" } }
     }
 }

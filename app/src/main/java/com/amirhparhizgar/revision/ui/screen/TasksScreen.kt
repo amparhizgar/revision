@@ -7,9 +7,11 @@ import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.amirhparhizgar.revision.R
 import com.amirhparhizgar.revision.model.SpacedRepetition
 import com.amirhparhizgar.revision.model.Task
 import com.amirhparhizgar.revision.ui.common.MyAppIcons
@@ -31,7 +33,7 @@ fun TasksScreen(
     goSingleScreen: (Task?) -> Unit,
     tasksViewModel: AllTasksViewModel = hiltViewModel()
 ) {
-    var sheetOpenedFor = remember { mutableStateOf<Task?>(null) }
+    val sheetOpenedFor = remember { mutableStateOf<Task?>(null) }
     val bottomSheetState =
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val taskListState = tasksViewModel.tasks.collectAsState(initial = listOf())
@@ -42,7 +44,6 @@ fun TasksScreen(
         sheetContent = {
             ReviewBottomSheet(
                 onSelect = { qualityIndex ->
-                    if (sheetOpenedFor != null) {
                         tasksViewModel.onDone(
                             sheetOpenedFor.value!!.id,
                             SpacedRepetition.Quality.list[qualityIndex]
@@ -50,18 +51,28 @@ fun TasksScreen(
                         scope.launch {
                             bottomSheetState.hide()
                         }
-                    }
                 },
                 nextReviews = sheetOpenedFor.value?.let { tasksViewModel.getNextReviewDates(it) }
                     ?: listOf("", "", "", "")
             )
         }
     ) {
+        val projectListState =
+            tasksViewModel.projectsWithWrapper.collectAsState()
+
         Column {
             TopAppBar(title = {
                 TaskFilterDropDown(
-                    items = listOf("all", "something else"),
-                    onSelected = { _, _ -> })
+                    items = projectListState.value.list.toMutableList().apply {
+                        set( // localize "All" item
+                            index = 0,
+                            stringResource(id = R.string.all_projects)
+                        )
+                    },
+                    selected = projectListState.value.selected,
+                    onSelect = { index ->
+                        tasksViewModel.setSelectedProject(index)
+                    })
             },
                 actions = {
                     NewTaskButton {
@@ -84,13 +95,12 @@ fun TasksScreenPreview() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewDropDown() {
-    TaskFilterDropDown(items = listOf("All projects", "Zen"), onSelected = { _, _ -> })
+    TaskFilterDropDown(items = listOf("All projects", "Zen"), selected = 0, onSelect = { })
 }
 
 @Composable
-fun TaskFilterDropDown(items: List<String>, onSelected: (index: Int, project: String) -> Unit) {
+fun TaskFilterDropDown(items: List<String>, selected: Int, onSelect: (index: Int) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedIndex by remember { mutableStateOf(0) }
     val textStyle = MaterialTheme.typography.h5
     val trailingIconColor =
         LocalContentColor.current.copy(alpha = TextFieldDefaults.IconOpacity)
@@ -106,7 +116,7 @@ fun TaskFilterDropDown(items: List<String>, onSelected: (index: Int, project: St
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                items[selectedIndex],
+                items[selected],
                 modifier = Modifier
                     .wrapContentSize(),
                 style = textStyle
@@ -126,9 +136,8 @@ fun TaskFilterDropDown(items: List<String>, onSelected: (index: Int, project: St
         ) {
             items.forEachIndexed { index, item ->
                 DropdownMenuItem(onClick = {
-                    selectedIndex = index
                     expanded = false
-                    onSelected(index, item)
+                    onSelect(index)
                 }) {
                     Text(text = item)
                 }
