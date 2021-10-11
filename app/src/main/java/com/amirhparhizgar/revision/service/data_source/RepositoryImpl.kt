@@ -32,7 +32,7 @@ class RepositoryImpl @Inject constructor(taskDatabase: TaskDatabase) : Repositor
 
     override suspend fun saveTask(task: Task) = dao.saveTask(task)
 
-    override fun getOldnessCount(oldness: TaskOldness): Int {
+    override fun getOldnessCount(oldness: TaskOldness): Flow<Int> {
         return dao.getIntervalCountInclusive(oldness.range.first, oldness.range.last)
     }
 

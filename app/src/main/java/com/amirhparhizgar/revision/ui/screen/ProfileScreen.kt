@@ -8,19 +8,22 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.amirhparhizgar.revision.R
 import com.amirhparhizgar.revision.model.BarChart
 import com.amirhparhizgar.revision.ui.common.MyAppIcons
+import com.amirhparhizgar.revision.viewmodel.ProfileViewModel
 
 @Composable
 @Preview(showBackground = true)
-fun ProfileScreen(goSettings: () -> Unit = {}) {
+fun ProfileScreen(goSettings: () -> Unit = {}, viewModel: ProfileViewModel = hiltViewModel()) {
     Column {
         TopAppBar(title = {
             Text(stringResource(id = R.string.profile))
@@ -32,7 +35,8 @@ fun ProfileScreen(goSettings: () -> Unit = {}) {
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
-        BarChart(BarChart.mock)
+        val barchartState = viewModel.barchart.collectAsState()
+        BarChart(barchartState.value)
     }
 }
 

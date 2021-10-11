@@ -29,13 +29,19 @@ class BarChart(val barList: List<Bar>) {
     )
 
     companion object {
-        val mock = BarChart(
-            listOf(
-                Bar(R.string.unseen, 2, R.color.unseen_color),
-                Bar(R.string.learning, 5, R.color.learning_color),
-                Bar(R.string.young, 10, R.color.young_color),
-                Bar(R.string.mature, 4, R.color.mature_color),
+        @JvmStatic
+        fun oldnessBarChart(unseen: Int, learning: Int, young: Int, mature: Int) =
+            BarChart(
+                listOf(
+                    Bar(R.string.unseen, unseen, R.color.unseen_color),
+                    Bar(R.string.learning, learning, R.color.learning_color),
+                    Bar(R.string.young, young, R.color.young_color),
+                    Bar(R.string.mature, mature, R.color.mature_color),
+                )
             )
-        )
+
+        val mock = oldnessBarChart(1, 2, 3, 2)
+
+        val emptyOldnessChart = oldnessBarChart(0, 0, 0, 0)
     }
 }

@@ -26,7 +26,7 @@ interface TaskDao {
     suspend fun saveTask(task: Task)
 
     @Query("SELECT COUNT(*) FROM tasks WHERE :min <= interval AND interval <= :max")
-    fun getIntervalCountInclusive(min: Int, max: Int): Int
+    fun getIntervalCountInclusive(min: Int, max: Int): Flow<Int>
 
     @Query("SELECT DISTINCT project FROM tasks WHERE project LIKE :pattern")
     fun getDistinctProjectsLike(pattern: String): List<String>

@@ -10,7 +10,7 @@ interface Repository {
     fun getTodoTasks(): Flow<List<Task>>
     fun deleteTask(id: Int)
     suspend fun saveTask(task: Task)
-    fun getOldnessCount(oldness: TaskOldness): Int
+    fun getOldnessCount(oldness: TaskOldness): Flow<Int>
     fun getProjectsStartWith(start: String): List<String>
     fun getProjects(): Flow<List<String>>
 }
