@@ -10,6 +10,7 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -56,11 +57,11 @@ fun DataBar(bar: BarChart.Bar) {
     ) {
         Box(
             modifier = Modifier
-                .background(color = bar.color)
+                .background(color = colorResource(id = bar.color))
                 .width(50.dp)
                 .fillMaxHeight(bar.ratio)
         )
-        Text(text = bar.count.toString(), color = bar.color)
-        Text(text = bar.label)
+        Text(text = bar.count.toString(), color = colorResource(id = bar.color))
+        Text(text = stringResource(id = bar.label))
     }
 }

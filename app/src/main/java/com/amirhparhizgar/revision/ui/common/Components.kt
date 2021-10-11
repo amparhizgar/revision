@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ val MyAppIcons = Icons.Rounded
 fun TaskRow(
     modifier: Modifier = Modifier,
     oldness: TaskOldness = TaskOldness.Unseen,
+    isPassed: Boolean = false,
     date: String = "Sun",
     title: String = "title",
     onDone: () -> Unit = {},
@@ -54,7 +56,12 @@ fun TaskRow(
             text = title, modifier = Modifier.weight(1F),
             style = MaterialTheme.typography.h5
         )
-        Text(date)
+        val dateTextColor =
+            if (isPassed) colorResource(id = R.color.red_text) else LocalContentColor.current
+        Text(
+            date,
+            style = MaterialTheme.typography.h5.copy(color = dateTextColor)
+        )
         CircleCheckbox(
             onClick = onDone,
             checked = checked
@@ -66,7 +73,7 @@ fun TaskRow(
 private fun TaskProgressIndicator(oldness: TaskOldness) {
     Box(
         modifier = Modifier
-            .background(oldness.color())
+            .background(colorResource(id = oldness.colorResId()))
             .width(4.dp)
             .fillMaxHeight()
     )
@@ -233,6 +240,7 @@ fun TaskList(
                         bottomSheetState.show()
                     }
                 }, date = wrapper.due,
+                isPassed = wrapper.isPassed,
                 oldness = wrapper.oldness,
                 checked = sheetOpenedFor.value == task && (bottomSheetState.targetValue != ModalBottomSheetValue.Hidden)
             )

@@ -1,6 +1,8 @@
 package com.amirhparhizgar.revision.model
 
-import androidx.compose.ui.graphics.Color
+import androidx.annotation.ColorRes
+import androidx.annotation.StringRes
+import com.amirhparhizgar.revision.R
 
 class BarChart(val barList: List<Bar>) {
     init {
@@ -19,15 +21,20 @@ class BarChart(val barList: List<Bar>) {
         return barList[index].count / totalCount.toFloat()
     }
 
-    data class Bar(val label: String, val count: Int, val color: Color, var ratio: Float = 0F)
+    data class Bar(
+        @StringRes val label: Int,
+        val count: Int,
+        @ColorRes val color: Int,
+        var ratio: Float = 0F
+    )
 
     companion object {
         val mock = BarChart(
             listOf(
-                Bar("Unseen", 2, Color(0xFF777777)),
-                Bar("Learning", 5, Color(0xFFfa7339)),
-                Bar("Young", 10, Color(0xFF10ad44)),
-                Bar("Mature", 4, Color(0xFF0A67E0)),
+                Bar(R.string.unseen, 2, R.color.unseen_color),
+                Bar(R.string.learning, 5, R.color.learning_color),
+                Bar(R.string.young, 10, R.color.young_color),
+                Bar(R.string.mature, 4, R.color.mature_color),
             )
         )
     }
