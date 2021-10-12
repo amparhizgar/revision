@@ -5,10 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -225,25 +226,51 @@ private fun QualityRow(
 fun TaskList(
     taskListState: State<List<TaskUIWrapper>>,
     goSingleScreen: (Task?) -> Unit,
+    onDismiss: (Task) -> Unit,
     scope: CoroutineScope,
     sheetOpenedFor: MutableState<Task?>,
     bottomSheetState: ModalBottomSheetState
 ) {
     LazyColumn {
-        itemsIndexed(taskListState.value) { _, wrapper: TaskUIWrapper ->
+        items(
+            items = taskListState.value,
+            key = { item: TaskUIWrapper -> item.task.id }) { wrapper ->
             val task = wrapper.task
-            TaskRow(
-                modifier = Modifier.clickable { goSingleScreen(task) },
-                title = wrapper.task.name, onDone = {
-                    scope.launch {
-                        sheetOpenedFor.value = task
-                        bottomSheetState.show()
+            AnimatedSwipeDismiss(
+                item = wrapper,
+                background = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 5.dp, vertical = 0.dp),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Icon(
+                            Icons.Filled.Delete,
+                            contentDescription = "",
+                            tint = LocalContentColor.current
+                        )
                     }
-                }, date = wrapper.due,
-                isPassed = wrapper.isPassed,
-                oldness = wrapper.oldness,
-                checked = sheetOpenedFor.value == task && (bottomSheetState.targetValue != ModalBottomSheetValue.Hidden)
+                },
+                onDismiss = { onDismiss(wrapper.task) },
+                content = {
+                    TaskRow(
+                        modifier = Modifier
+                            .background(MaterialTheme.colors.surface)
+                            .clickable { goSingleScreen(task) },
+                        title = wrapper.task.name, onDone = {
+                            scope.launch {
+                                sheetOpenedFor.value = task
+                                bottomSheetState.show()
+                            }
+                        }, date = wrapper.due,
+                        isPassed = wrapper.isPassed,
+                        oldness = wrapper.oldness,
+                        checked = sheetOpenedFor.value == task && (bottomSheetState.targetValue != ModalBottomSheetValue.Hidden)
+                    )
+                }
             )
+
         }
     }
 }

@@ -9,6 +9,7 @@ import com.amirhparhizgar.revision.model.TaskOldness
 import com.amirhparhizgar.revision.model.TaskUIWrapper
 import com.amirhparhizgar.revision.service.data_source.Repository
 import com.amirhparhizgar.revision.service.human_readable_date.HumanReadableDate
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -52,10 +53,16 @@ open class BaseTaskViewModel constructor(
     }
 
     fun onDone(taskId: Int, quality: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val oldTask = repository.getTask(taskId)
             val newTask = SpacedRepetition.calculateRepetition(oldTask, quality)
             repository.saveTask(newTask)
+        }
+    }
+
+    fun delete(taskId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteTask(taskId)
         }
     }
 }

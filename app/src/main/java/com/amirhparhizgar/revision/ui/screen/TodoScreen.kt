@@ -20,7 +20,7 @@ fun TodoScreen(
     goSingleScreen: (Task?) -> Unit,
     todoViewModel: TodoViewModel = hiltViewModel()
 ) {
-    var sheetOpenedFor = remember { mutableStateOf<Task?>(null) }
+    val sheetOpenedFor = remember { mutableStateOf<Task?>(null) }
     val bottomSheetState =
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
@@ -57,7 +57,14 @@ fun TodoScreen(
                 }
             )
 
-            TaskList(taskListState, goSingleScreen, scope, sheetOpenedFor, bottomSheetState)
+            TaskList(
+                taskListState,
+                goSingleScreen,
+                onDismiss = { todoViewModel.delete(it.id) },
+                scope,
+                sheetOpenedFor,
+                bottomSheetState
+            )
         }
     }
 }

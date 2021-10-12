@@ -44,13 +44,13 @@ fun TasksScreen(
         sheetContent = {
             ReviewBottomSheet(
                 onSelect = { qualityIndex ->
-                        tasksViewModel.onDone(
-                            sheetOpenedFor.value!!.id,
-                            SpacedRepetition.Quality.list[qualityIndex]
-                        )
-                        scope.launch {
-                            bottomSheetState.hide()
-                        }
+                    tasksViewModel.onDone(
+                        sheetOpenedFor.value!!.id,
+                        SpacedRepetition.Quality.list[qualityIndex]
+                    )
+                    scope.launch {
+                        bottomSheetState.hide()
+                    }
                 },
                 nextReviews = sheetOpenedFor.value?.let { tasksViewModel.getNextReviewDates(it) }
                     ?: listOf("", "", "", "")
@@ -81,7 +81,14 @@ fun TasksScreen(
                 }
             )
 
-            TaskList(taskListState, goSingleScreen, scope, sheetOpenedFor, bottomSheetState)
+            TaskList(
+                taskListState,
+                goSingleScreen,
+                onDismiss = { tasksViewModel.delete(it.id) },
+                scope,
+                sheetOpenedFor,
+                bottomSheetState
+            )
         }
     }
 }
