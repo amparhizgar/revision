@@ -1,5 +1,6 @@
 package com.amirhparhizgar.revision.viewmodel
 
+import android.util.Log
 import androidx.compose.foundation.ScrollState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,17 +8,57 @@ import com.amirhparhizgar.revision.model.SpacedRepetition
 import com.amirhparhizgar.revision.model.Task
 import com.amirhparhizgar.revision.model.TaskOldness
 import com.amirhparhizgar.revision.model.TaskUIWrapper
+import com.amirhparhizgar.revision.service.Util
 import com.amirhparhizgar.revision.service.data_source.Repository
 import com.amirhparhizgar.revision.service.human_readable_date.HumanReadableDate
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-open class BaseTaskViewModel constructor(
+abstract class BaseTaskViewModel constructor(
     protected val repository: Repository,
     private val humanReadableDate: HumanReadableDate
 ) : ViewModel() {
+    abstract val tasks: StateFlow<List<TaskUIWrapper>>
+
+    val selections = MutableStateFlow(setOf<Int>())
+
+    val events = MutableSharedFlow<TodoScreenEvents>()
+
+    val selectionCount: StateFlow<Int> =
+        selections.map { it.size }.stateIn(viewModelScope, SharingStarted.Lazily, 0)
+
+    fun unselectAll() {
+        selections.value = setOf()
+    }
+
+    fun onTaskClicked(index: Int) {
+        if (selectionCount.value > 0)
+            onTaskLongClicked(index)
+        else {
+            viewModelScope.launch {
+                events.emit(TodoScreenEvents.GoSingleScreen(tasks.value[index].task))
+            }
+        }
+    }
+
+    fun onTaskLongClicked(index: Int) {
+        selections.value = selections.value.toMutableSet().apply {
+            if (this.contains(index))
+                remove(index)
+            else
+                add(index)
+        }
+    }
+
+    fun deleteSelection() {
+        val selectionCache = selections.value
+        val tasksCache = tasks.value
+        selections.value = emptySet()
+        viewModelScope.launch(Dispatchers.IO) {
+            selectionCache.forEach { delete(tasksCache[it].task.id) }
+        }
+    }
 
     val scrollState = ScrollState(0)
 
@@ -65,4 +106,15 @@ open class BaseTaskViewModel constructor(
             repository.deleteTask(taskId)
         }
     }
+
+    fun Flow<List<TaskUIWrapper>>.combineWithSelections(): Flow<List<TaskUIWrapper>> =
+        this.combine(selections) { taskWrappers, selections ->
+            val a = taskWrappers.toList().apply {
+                forEachIndexed { index, wrapper ->
+                    wrapper.isSelected = index in selections
+                }
+            }
+            Log.d(Util.TAG, "TodoViewModel->a: $a")
+            return@combine a
+        }
 }

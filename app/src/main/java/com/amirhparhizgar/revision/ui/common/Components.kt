@@ -1,11 +1,13 @@
 package com.amirhparhizgar.revision.ui.common
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -40,12 +42,19 @@ fun TaskRow(
     oldness: TaskOldness = TaskOldness.Unseen,
     isPassed: Boolean = false,
     date: String = "Sun",
+    selected: Boolean = false,
     title: String = "title",
     onDone: () -> Unit = {},
     checked: Boolean = false
 ) {
+    val background = if (selected)
+        Color.LightGray
+    else
+        MaterialTheme.colors.surface
+
     Row(
         modifier
+            .background(color = background)
             .padding(8.dp)
             .height(IntrinsicSize.Max)
             .fillMaxWidth(),
@@ -221,20 +230,22 @@ private fun QualityRow(
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterialApi
 @Composable
 fun TaskList(
     taskListState: State<List<TaskUIWrapper>>,
-    goSingleScreen: (Task?) -> Unit,
+    onTaskClick: (index: Int) -> Unit,
+    onTaskLongClick: (index: Int) -> Unit,
     onDismiss: (Task) -> Unit,
     scope: CoroutineScope,
     sheetOpenedFor: MutableState<Task?>,
     bottomSheetState: ModalBottomSheetState
 ) {
     LazyColumn {
-        items(
+        itemsIndexed(
             items = taskListState.value,
-            key = { item: TaskUIWrapper -> item.task.id }) { wrapper ->
+            key = { _, item: TaskUIWrapper -> item.task.id }) { index: Int, wrapper: TaskUIWrapper ->
             val task = wrapper.task
             AnimatedSwipeDismiss(
                 item = wrapper,
@@ -257,7 +268,12 @@ fun TaskList(
                     TaskRow(
                         modifier = Modifier
                             .background(MaterialTheme.colors.surface)
-                            .clickable { goSingleScreen(task) },
+//                            .clickable { goSingleScreen(task) }
+//                            .able
+//                            .selectable(selected = true, onClick = {onSelection(index)}, role = Role.Checkbox)
+                            .combinedClickable(onClick = { onTaskClick(index) },
+                                onLongClick = { onTaskLongClick(index) }),
+                        selected = wrapper.isSelected,
                         title = wrapper.task.name, onDone = {
                             scope.launch {
                                 sheetOpenedFor.value = task
@@ -273,6 +289,31 @@ fun TaskList(
 
         }
     }
+}
+
+
+@Composable
+fun ContextualTaskAppBar(
+    onUnselectAll: () -> Unit,
+    onDelete: () -> Unit,
+    selectionCount: State<Int>
+) {
+    TopAppBar(navigationIcon = {
+        IconButton(onClick = onUnselectAll) {
+            Icon(
+                imageVector = MyAppIcons.Cancel,
+                contentDescription = "cancel selection"
+            )
+        }
+    }, title = { Text("${selectionCount.value} selected") },
+        actions = {
+            IconButton(onClick = onDelete) {
+                Icon(
+                    imageVector = MyAppIcons.Delete,
+                    contentDescription = "delete selected"
+                )
+            }
+        })
 }
 
 // not used now

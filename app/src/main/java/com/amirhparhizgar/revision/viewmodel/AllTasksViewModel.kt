@@ -23,7 +23,7 @@ class AllTasksViewModel @Inject constructor(
         this.selectedProjectIndex.value = selectedProject
     }
 
-    val tasks: Flow<List<TaskUIWrapper>> = getTasks(false)
+    override val tasks: StateFlow<List<TaskUIWrapper>> = getTasks(false)
         .combine(this.selectedProjectIndex)
         { list, selectedProjectIndex ->
             val projectsCache = projectsWithWrapper.value.list
@@ -39,6 +39,9 @@ class AllTasksViewModel @Inject constructor(
                 }
             }
         }
+        .combineWithSelections()
+        .stateIn(viewModelScope, SharingStarted.Lazily, listOf())
+
 
     val projectsWithWrapper: StateFlow<DropDownWrapper<String>> =
         repository.getProjects().combine(this.selectedProjectIndex)
