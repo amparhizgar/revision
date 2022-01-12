@@ -61,10 +61,16 @@ fun DataBar(bar: BarChart.Bar) {
     ) {
         Box(
             modifier = Modifier
-                .background(color = colorResource(id = bar.color))
                 .width(50.dp)
-                .fillMaxHeight(bar.ratio)
-        )
+                .weight(1f)
+        ) {
+            Box( // colored bar
+                modifier = Modifier
+                    .background(color = colorResource(id = bar.color))
+                    .fillMaxWidth()
+                    .fillMaxHeight(bar.ratio)
+            )
+        }
         Text(text = bar.count.toString(), color = colorResource(id = bar.color))
         Text(text = stringResource(id = bar.label))
     }
