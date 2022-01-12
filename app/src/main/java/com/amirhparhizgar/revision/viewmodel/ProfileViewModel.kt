@@ -20,10 +20,10 @@ class ProfileViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val barFlow = combine(
-        repository.getOldnessCount(TaskOldness.Unseen),
-        repository.getOldnessCount(TaskOldness.Learning),
-        repository.getOldnessCount(TaskOldness.Young),
-        repository.getOldnessCount(TaskOldness.Mature)
+        repository.getOldnessCount(TaskOldness.UNSEEN),
+        repository.getOldnessCount(TaskOldness.LEARNING),
+        repository.getOldnessCount(TaskOldness.YOUNG),
+        repository.getOldnessCount(TaskOldness.MATURE)
     ) { unseen, learning, young, mature ->
         BarChart.oldnessBarChart(unseen, learning, young, mature)
     }

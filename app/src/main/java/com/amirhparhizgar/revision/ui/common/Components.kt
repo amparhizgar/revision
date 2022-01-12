@@ -39,7 +39,7 @@ val MyAppIcons = Icons.Rounded
 @Composable
 fun TaskRow(
     modifier: Modifier = Modifier,
-    oldness: TaskOldness = TaskOldness.Unseen,
+    oldness: TaskOldness = TaskOldness.UNSEEN,
     isPassed: Boolean = false,
     date: String = "Sun",
     selected: Boolean = false,
