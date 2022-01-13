@@ -18,6 +18,15 @@ class SettingStore @Inject constructor(val dataStore: DataStore<Preferences>) {
             get() = false
     }
 
+    val remindingHour = RemindingHour()
+
+    inner class RemindingHour : SimpleSetting<Int>(dataStore) {
+        override val key: Preferences.Key<Int>
+            get() = intPreferencesKey("reminding hour")
+        public override val default: Int
+            get() = 8
+    }
+
     val themeSetting = ThemeSetting()
 
     inner class ThemeSetting : SimpleSetting<Int>(dataStore) {

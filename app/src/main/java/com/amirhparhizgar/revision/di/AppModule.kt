@@ -30,9 +30,11 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 abstract class AppModule {
     @Binds
+    @Singleton
     abstract fun bindRepository(repository: RepositoryImpl): Repository
 
     @Binds
+    @Singleton
     abstract fun bindDateTranslatableStrings(impl: DateTranslatableStringsImpl): DateTranslatableStrings
 
     companion object {
@@ -47,6 +49,7 @@ abstract class AppModule {
         }
 
         @Provides
+        @Singleton
         fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
             val name = "SettingStore"
             val corruptionHandler: ReplaceFileCorruptionHandler<Preferences>? = null

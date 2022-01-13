@@ -15,6 +15,5 @@ abstract class SimpleSetting<T>(private val dataStore: DataStore<Preferences>) :
         }
     }
 
-    override val flow: Flow<T>
-        get() = dataStore.data.map { it[key] ?: default }
+    override val flow: Flow<T> = dataStore.data.map { it[key] ?: default }
 }

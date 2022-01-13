@@ -49,7 +49,7 @@ fun SettingScreen(onBackPressed: () -> Unit, viewModel: SettingViewModel = hiltV
         val scrollState = rememberScrollState()
         Column(Modifier.verticalScroll(scrollState)) {
             SettingGroup(text = stringResource(id = R.string.notifications)) {
-                val reminderEnabled = viewModel.reminderChecked.value
+                val reminderEnabled = viewModel.reminderChecked.collectAsState().value
                 SwitchSettingItem(
                     modifier = Modifier.clickable {
                         viewModel.toggleReminderChecked()
@@ -59,6 +59,7 @@ fun SettingScreen(onBackPressed: () -> Unit, viewModel: SettingViewModel = hiltV
                     detail = stringResource(id = R.string.get_summary_tasks),
                     checked = reminderEnabled
                 )
+                val reminderHour = viewModel.remindingHour.collectAsState().value
                 TitleDetailSettingItem(
                     modifier = Modifier
                         .clickable(
@@ -67,7 +68,7 @@ fun SettingScreen(onBackPressed: () -> Unit, viewModel: SettingViewModel = hiltV
                         )
                         .alpha(if (reminderEnabled) 1f else 0.7f),
                     title = stringResource(id = R.string.preferred_time),
-                    detail = "todo (8 am)",
+                    detail = reminderHour.toString(),
                     icon = MyAppIcons.Schedule
                 )
             }
@@ -75,7 +76,7 @@ fun SettingScreen(onBackPressed: () -> Unit, viewModel: SettingViewModel = hiltV
                 TitleDetailSettingItem(
                     icon = MyAppIcons.CloudUpload,
                     title = stringResource(id = R.string.status),
-                    detail = "todo provide appropriate status"
+                    detail = "todo provide appropriate details"
                 )
             }
             SettingGroup(text = stringResource(id = R.string.appearance)) {
@@ -90,11 +91,12 @@ fun SettingScreen(onBackPressed: () -> Unit, viewModel: SettingViewModel = hiltV
                             themeDialogVisible = false
                         })
                 }
+                val theme = viewModel.themeSelection.collectAsState().value
                 TitleDetailSettingItem(
                     modifier = Modifier.clickable { themeDialogVisible = true },
                     icon = MyAppIcons.DarkMode,
                     title = stringResource(id = R.string.dark_mode),
-                    detail = "todo provide appropriate details"
+                    detail = stringResource(id = theme.textResId)
                 )
             }
             SettingGroup(text = stringResource(id = R.string.about)) {

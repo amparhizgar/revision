@@ -4,31 +4,33 @@ import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.amirhparhizgar.revision.model.ThemeMode
+import com.amirhparhizgar.revision.service.setting.SettingStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
-    @ApplicationContext context: Context
+    @ApplicationContext context: Context, val settingStore: SettingStore
 ) : ViewModel() {
-    private val _reminderChecked = mutableStateOf(false) // todo load form storage in init{}
-    val reminderChecked: State<Boolean> = _reminderChecked
+    val reminderChecked: StateFlow<Boolean> = settingStore.todoReminding.flow.stateHere(false)
 
-    fun setReminderChecked(reminderChecked: Boolean) {
-        _reminderChecked.value = reminderChecked
+    fun setReminderChecked(reminderChecked: Boolean) = viewModelScope.launch {
+        settingStore.todoReminding.set(reminderChecked)
     }
 
-    fun toggleReminderChecked() {
-        _reminderChecked.value = !_reminderChecked.value
+    fun toggleReminderChecked() = viewModelScope.launch {
+        settingStore.todoReminding.set(reminderChecked.value.not())
     }
 
-    private val _remindingHour = mutableStateOf(8) // todo load form storage in init{}
-    val remindingHour: State<Int> = _remindingHour
+    val remindingHour: StateFlow<Int> = settingStore.remindingHour.flow.stateHere(8)
 
-    fun setRemindingHour(remindingHour: Int) {
-        _remindingHour.value = remindingHour
+    fun setRemindingHour(remindingHour: Int) = viewModelScope.launch {
+        settingStore.remindingHour.set(remindingHour)
         hideSelectTimeDialog()
     }
 
@@ -43,10 +45,17 @@ class SettingViewModel @Inject constructor(
         _selectTimeDialogVisible.value = false
     }
 
-    private val _themeMode = mutableStateOf(ThemeMode.AUTOMATIC) // todo load form storage in init{}
-    val themeSelection: State<ThemeMode> = _themeMode
+    val themeSelection: StateFlow<ThemeMode> =
+        settingStore.themeSetting.flow.map { ThemeMode.fromId(it) }.stateHere(ThemeMode.AUTOMATIC)
 
-    fun setThemeMode(themeSelection: ThemeMode) {
-        _themeMode.value = themeSelection
+    fun setThemeMode(themeSelection: ThemeMode) = viewModelScope.launch {
+        settingStore.themeSetting.set(themeSelection.id)
+    }
+
+    private fun <T> Flow<T>.stateHere(initialValue: T): StateFlow<T> {
+        return stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly, initialValue
+        )
     }
 }

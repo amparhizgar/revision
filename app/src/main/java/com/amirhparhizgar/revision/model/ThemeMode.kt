@@ -10,5 +10,8 @@ enum class ThemeMode(val id: Int, @StringRes val textResId: Int) {
 
     companion object {
         val list = listOf(AUTOMATIC, LIGHT, DARK)
+        fun fromId(id: Int): ThemeMode {
+            return list.first { it.id == id }
+        }
     }
 }
