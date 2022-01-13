@@ -24,7 +24,7 @@ class SettingStore @Inject constructor(val dataStore: DataStore<Preferences>) {
         override val key: Preferences.Key<Int>
             get() = intPreferencesKey("theme")
         override val default: Int
-            get() = ThemeMode.AUTOMATIC
+            get() = ThemeMode.AUTOMATIC.id
     }
 }
 

@@ -80,7 +80,7 @@ class MainActivity : ComponentActivity() {
                                 ProfileScreen(goSettings = { navController.navigate(settingScreen.destination) })
                             }
                             composable(settingScreen.destination) {
-                                SettingScreen()
+                                SettingScreen(onBackPressed = navController::popBackStack)
                             }
                         }
                     }

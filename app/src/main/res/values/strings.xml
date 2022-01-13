@@ -41,4 +41,5 @@
 	<string name="learning">Learning</string>
 	<string name="young">Young</string>
 	<string name="mature">Mature</string>
+	<string name="select_time_for_reminding">Select reminding time</string>
 </resources>

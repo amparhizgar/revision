@@ -2,7 +2,11 @@ package com.amirhparhizgar.revision.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
@@ -11,25 +15,33 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.amirhparhizgar.revision.BuildConfig
 import com.amirhparhizgar.revision.R
 import com.amirhparhizgar.revision.model.ThemeMode
 import com.amirhparhizgar.revision.ui.common.MyAppIcons
+import com.amirhparhizgar.revision.viewmodel.SettingViewModel
 
 @Preview(showBackground = true)
 @Composable
-fun SettingScreen() {
+fun PreviewSettingScreen() {
+    SettingScreen({})
+}
+
+@Composable
+fun SettingScreen(onBackPressed: () -> Unit, viewModel: SettingViewModel = hiltViewModel()) {
     Column {
         TopAppBar(
             title = { Text(stringResource(id = R.string.settings)) },
             navigationIcon = {
-                IconButton(onClick = { /* todo add onClick */ }) {
+                IconButton(onClick = onBackPressed) {
                     Icon(MyAppIcons.ArrowBack, contentDescription = null)
                 }
             }
@@ -37,14 +49,23 @@ fun SettingScreen() {
         val scrollState = rememberScrollState()
         Column(Modifier.verticalScroll(scrollState)) {
             SettingGroup(text = stringResource(id = R.string.notifications)) {
-                TitleDetailSettingItem(
-                    modifier = Modifier.clickable { /* todo add onClick*/ },
+                val reminderEnabled = viewModel.reminderChecked.value
+                SwitchSettingItem(
+                    modifier = Modifier.clickable {
+                        viewModel.toggleReminderChecked()
+                    },
+                    icon = MyAppIcons.Notifications,
                     title = stringResource(id = R.string.todo_reminding),
                     detail = stringResource(id = R.string.get_summary_tasks),
-                    icon = MyAppIcons.Notifications
+                    checked = reminderEnabled
                 )
                 TitleDetailSettingItem(
-                    modifier = Modifier.clickable { /* todo add onClick*/ },
+                    modifier = Modifier
+                        .clickable(
+                            enabled = reminderEnabled,
+                            onClick = viewModel::showSelectTimeDialog
+                        )
+                        .alpha(if (reminderEnabled) 1f else 0.7f),
                     title = stringResource(id = R.string.preferred_time),
                     detail = "todo (8 am)",
                     icon = MyAppIcons.Schedule
@@ -59,19 +80,13 @@ fun SettingScreen() {
             }
             SettingGroup(text = stringResource(id = R.string.appearance)) {
                 var themeDialogVisible by remember { mutableStateOf(false) }
-                var themeDialogSelection by remember {
-                    mutableStateOf(
-                        ThemeMode.getRadioOption(
-                            ThemeMode.AUTOMATIC
-                        )
-                    )
-                }
+                viewModel.themeSelection
                 if (themeDialogVisible) {
                     ThemeDialog(
-                        selection = themeDialogSelection,
+                        selection = viewModel.themeSelection.value,
                         onDismiss = { themeDialogVisible = false },
                         onSelected = {
-                            themeDialogSelection = it
+                            viewModel.setThemeMode(it)
                             themeDialogVisible = false
                         })
                 }
@@ -91,13 +106,52 @@ fun SettingScreen() {
             }
         }
     }
+
+    if (viewModel.selectTimeDialogVisible.value)
+        SelectTimeDialog(
+            onDismissRequest = viewModel::hideSelectTimeDialog,
+            selected = viewModel.remindingHour.value,
+            onSelected = viewModel::setRemindingHour
+        )
+}
+
+@Composable
+fun SelectTimeDialog(onDismissRequest: () -> Unit, selected: Int, onSelected: (Int) -> Unit) {
+    val scrollableState = rememberScrollState()
+    Dialog(onDismissRequest = onDismissRequest, content = {
+        Column(
+            modifier = Modifier
+                .background(MaterialTheme.colors.surface, shape = MaterialTheme.shapes.large)
+                .heightIn(50.dp, 250.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.select_time_for_reminding),
+                modifier = Modifier.padding(16.dp),
+                style = MaterialTheme.typography.subtitle1
+            )
+            LazyColumn(
+                Modifier
+                    .fillMaxHeight()
+                    .scrollable(scrollableState, Orientation.Vertical)
+            ) {
+                items((6..24).toList() + (1..5).toList()) {
+                    CheckBoxItem(
+                        isItSelected = it == selected,
+                        onSelected = onSelected,
+                        value = it,
+                        text = it.toString()
+                    )
+                }
+            }
+        }
+    })
 }
 
 @Preview
 @Composable
 fun PreviewThemeDialog() {
     ThemeDialog(
-        selection = ThemeMode.getRadioOption(ThemeMode.AUTOMATIC),
+        selection = ThemeMode.AUTOMATIC,
         onDismiss = {},
         onSelected = {})
 }
@@ -105,43 +159,56 @@ fun PreviewThemeDialog() {
 @Composable
 fun ThemeDialog(
     onDismiss: () -> Unit,
-    selection: ThemeMode.RadioOption,
-    onSelected: (ThemeMode.RadioOption) -> Unit
+    selection: ThemeMode,
+    onSelected: (ThemeMode) -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Column(
             Modifier
                 .padding(16.dp)
-                .background(color = MaterialTheme.colors.surface),
+                .background(
+                    color = MaterialTheme.colors.surface,
+                    shape = MaterialTheme.shapes.large
+                ),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(stringResource(id = R.string.theme), modifier = Modifier.padding(16.dp))
             ThemeMode.list.forEach {
-                val isItSelected = it.ThemeMode == selection.ThemeMode
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .selectable(
-                            selected = (isItSelected),
-                            onClick = { onSelected(it) },
-                            role = Role.RadioButton
-                        )
-                        .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = (isItSelected),
-                        onClick = null // null recommended for accessibility with screen readers
-                    )
-                    Text(
-                        text = stringResource(id = it.textResId),
-                        style = MaterialTheme.typography.body1.merge(),
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                }
+                val isItSelected = it == selection
+                CheckBoxItem(isItSelected, onSelected, it, text = stringResource(id = it.textResId))
             }
         }
+    }
+}
+
+@Composable
+private fun <T> CheckBoxItem(
+    isItSelected: Boolean,
+    onSelected: (T) -> Unit,
+    value: T,
+    text: String
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(46.dp)
+            .selectable(
+                selected = (isItSelected),
+                onClick = { onSelected(value) },
+                role = Role.RadioButton
+            )
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(
+            selected = (isItSelected),
+            onClick = null // null recommended for accessibility with screen readers
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.body1.merge(),
+            modifier = Modifier.padding(start = 16.dp)
+        )
     }
 }
 
@@ -221,5 +288,28 @@ fun TitleDetailSettingItem(
             Text(text = title, style = MaterialTheme.typography.subtitle1)
             Text(text = detail, style = MaterialTheme.typography.caption)
         }
+    }
+}
+
+@Composable
+fun SwitchSettingItem(
+    modifier: Modifier = Modifier,
+    icon: ImageVector?,
+    title: String,
+    detail: String,
+    checked: Boolean
+) {
+    SettingItem(modifier, icon = icon) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(text = title, style = MaterialTheme.typography.subtitle1)
+                Text(text = detail, style = MaterialTheme.typography.caption)
+            }
+            Switch(checked = checked, onCheckedChange = null)
+        }
+
     }
 }
