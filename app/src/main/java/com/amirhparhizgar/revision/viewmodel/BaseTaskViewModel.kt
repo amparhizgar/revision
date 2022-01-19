@@ -11,13 +11,15 @@ import com.amirhparhizgar.revision.model.TaskUIWrapper
 import com.amirhparhizgar.revision.service.Util
 import com.amirhparhizgar.revision.service.data_source.Repository
 import com.amirhparhizgar.revision.service.human_readable_date.HumanReadableDate
+import com.amirhparhizgar.revision.service.scheduler.Scheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 abstract class BaseTaskViewModel constructor(
     protected val repository: Repository,
-    private val humanReadableDate: HumanReadableDate
+    private val humanReadableDate: HumanReadableDate,
+    private val scheduler: Scheduler
 ) : ViewModel() {
     abstract val tasks: StateFlow<List<TaskUIWrapper>>
 
@@ -27,6 +29,10 @@ abstract class BaseTaskViewModel constructor(
 
     val selectionCount: StateFlow<Int> =
         selections.map { it.size }.stateIn(viewModelScope, SharingStarted.Lazily, 0)
+
+    init {
+        scheduleInScope()
+    }
 
     fun unselectAll() {
         selections.value = setOf()
@@ -57,6 +63,7 @@ abstract class BaseTaskViewModel constructor(
         selections.value = emptySet()
         viewModelScope.launch(Dispatchers.IO) {
             selectionCache.forEach { delete(tasksCache[it].task.id) }
+            schedule()
         }
     }
 
@@ -98,12 +105,14 @@ abstract class BaseTaskViewModel constructor(
             val oldTask = repository.getTask(taskId)
             val newTask = SpacedRepetition.calculateRepetition(oldTask, quality)
             repository.saveTask(newTask)
+            schedule()
         }
     }
 
     fun delete(taskId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteTask(taskId)
+            schedule()
         }
     }
 
@@ -117,4 +126,15 @@ abstract class BaseTaskViewModel constructor(
             Log.d(Util.TAG, "TodoViewModel->a: $a")
             return@combine a
         }
+
+
+    private fun scheduleInScope() {
+        viewModelScope.launch {
+            schedule()
+        }
+    }
+
+    private suspend fun schedule() {
+        scheduler.scheduleOrCancel()
+    }
 }

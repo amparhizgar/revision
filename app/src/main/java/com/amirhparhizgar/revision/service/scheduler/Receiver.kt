@@ -16,6 +16,9 @@ class Receiver : BroadcastReceiver() {
     @Inject
     lateinit var notificationManager: NotificationManager
 
+    @Inject
+    lateinit var scheduler: Scheduler
+
     override fun onReceive(context: Context, intent: Intent) {
         Log.d(TAG, "onReceive: action: ${intent.action}")
 
@@ -23,6 +26,12 @@ class Receiver : BroadcastReceiver() {
             SEND_DAILY_NOTIFICATION_ACTION -> {
                 runBlocking {
                     notificationManager.sendTodayNotification()
+                    scheduler.scheduleOrCancel()
+                }
+            }
+            Intent.ACTION_BOOT_COMPLETED, Intent.ACTION_MY_PACKAGE_REPLACED -> {
+                runBlocking {
+                    scheduler.scheduleOrCancel()
                 }
             }
         }

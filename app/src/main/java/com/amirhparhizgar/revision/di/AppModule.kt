@@ -14,6 +14,8 @@ import com.amirhparhizgar.revision.service.data_source.RepositoryImpl
 import com.amirhparhizgar.revision.service.data_source.TaskDatabase
 import com.amirhparhizgar.revision.service.human_readable_date.DateTranslatableStrings
 import com.amirhparhizgar.revision.service.human_readable_date.DateTranslatableStringsImpl
+import com.amirhparhizgar.revision.service.scheduler.Scheduler
+import com.amirhparhizgar.revision.service.scheduler.SchedulerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -36,6 +38,10 @@ abstract class AppModule {
     @Binds
     @Singleton
     abstract fun bindDateTranslatableStrings(impl: DateTranslatableStringsImpl): DateTranslatableStrings
+
+    @Binds
+    @Singleton
+    abstract fun bindScheduler(impl: SchedulerImpl): Scheduler
 
     companion object {
         @Provides

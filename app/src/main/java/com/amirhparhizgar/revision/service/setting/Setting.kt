@@ -5,4 +5,5 @@ import kotlinx.coroutines.flow.Flow
 interface Setting<T> {
     suspend fun set(value: T)
     val flow: Flow<T>
+    suspend fun value(): T
 }

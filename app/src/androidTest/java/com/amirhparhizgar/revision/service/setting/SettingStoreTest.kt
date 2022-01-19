@@ -40,7 +40,7 @@ class SettingStoreTest : DataStoreTest() {
     @Test
     fun setThemeSetting() {
         runBlocking {
-            val value = ThemeMode.DARK
+            val value = ThemeMode.DARK.id
             settingStore.themeSetting.set(value)
             assertThat(settingStore.themeSetting.flow.first()).isEqualTo(value)
         }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amirhparhizgar.revision.model.ThemeMode
+import com.amirhparhizgar.revision.service.scheduler.Scheduler
 import com.amirhparhizgar.revision.service.setting.SettingStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -15,16 +16,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
-    @ApplicationContext context: Context, val settingStore: SettingStore
+    @ApplicationContext context: Context, val settingStore: SettingStore, val scheduler: Scheduler
 ) : ViewModel() {
     val reminderChecked: StateFlow<Boolean> = settingStore.todoReminding.flow.stateHere(false)
 
     fun setReminderChecked(reminderChecked: Boolean) = viewModelScope.launch {
         settingStore.todoReminding.set(reminderChecked)
+        scheduler.scheduleOrCancel()
     }
 
     fun toggleReminderChecked() = viewModelScope.launch {
         settingStore.todoReminding.set(reminderChecked.value.not())
+        scheduler.scheduleOrCancel()
     }
 
     val remindingHour: StateFlow<Int> = settingStore.remindingHour.flow.stateHere(8)
@@ -32,6 +35,7 @@ class SettingViewModel @Inject constructor(
     fun setRemindingHour(remindingHour: Int) = viewModelScope.launch {
         settingStore.remindingHour.set(remindingHour)
         hideSelectTimeDialog()
+        scheduler.scheduleOrCancel()
     }
 
     private val _selectTimeDialogVisible = mutableStateOf(false)

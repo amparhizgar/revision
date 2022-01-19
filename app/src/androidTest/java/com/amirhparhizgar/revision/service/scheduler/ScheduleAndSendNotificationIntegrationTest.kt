@@ -4,6 +4,7 @@ import android.content.Context
 import com.amirhparhizgar.revision.model.Task
 import com.amirhparhizgar.revision.service.data_source.Repository
 import com.amirhparhizgar.revision.service.notification.NotificationManager
+import com.amirhparhizgar.revision.service.setting.SettingStore
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -29,6 +30,9 @@ class ScheduleAndSendNotificationIntegrationTest {
     lateinit var appContext: Context
 
     @Inject
+    lateinit var settingStore: SettingStore
+
+    @Inject
     lateinit var notificationManager: NotificationManager
 
     @Before
@@ -50,11 +54,10 @@ class ScheduleAndSendNotificationIntegrationTest {
 
             assertThat(notificationManager.dailyReminderNotification()).isNotNull()
 
-            SchedulerAndroidTestDouble(appContext).schedule()
+            SchedulerAndroidTestDouble(appContext, settingStore, repository).scheduleOrCancel()
 
             delay(15 * 1000L)// after this delay application will terminate and notification get cancelled
 
             repository.deleteTask(77)
         }
-
 }

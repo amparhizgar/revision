@@ -7,6 +7,7 @@ import com.amirhparhizgar.revision.model.TaskUIWrapper
 import com.amirhparhizgar.revision.service.Util.TAG
 import com.amirhparhizgar.revision.service.data_source.Repository
 import com.amirhparhizgar.revision.service.human_readable_date.HumanReadableDate
+import com.amirhparhizgar.revision.service.scheduler.Scheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -14,9 +15,10 @@ import javax.inject.Inject
 @HiltViewModel
 class AllTasksViewModel @Inject constructor(
     repository: Repository,
-    humanReadableDate: HumanReadableDate
+    humanReadableDate: HumanReadableDate,
+    scheduler: Scheduler
 ) :
-    BaseTaskViewModel(repository, humanReadableDate) {
+    BaseTaskViewModel(repository, humanReadableDate, scheduler) {
     private val selectedProjectIndex = MutableStateFlow(0)
 
     fun setSelectedProject(selectedProject: Int) {

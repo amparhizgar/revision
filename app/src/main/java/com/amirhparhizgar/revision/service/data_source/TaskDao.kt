@@ -19,6 +19,13 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE  :minMillis <= nextRepetitionMillis AND nextRepetitionMillis < :maxMillis")
     fun getTaskBetweenTimes(minMillis: Long, maxMillis: Long): Flow<List<Task>>
 
+
+    @Query("SELECT * FROM tasks WHERE  :minMillis <= nextRepetitionMillis AND nextRepetitionMillis < :maxMillis ORDER BY nextRepetitionMillis ASC LIMIT 1")
+    suspend fun getTheTaskAfterToday(
+        minMillis: Long,
+        maxMillis: Long
+    ): Task?
+
     @Query("DELETE FROM tasks WHERE id == :id")
     fun deleteTask(id: Int): Int
 

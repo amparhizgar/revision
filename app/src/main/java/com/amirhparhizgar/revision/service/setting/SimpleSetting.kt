@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 abstract class SimpleSetting<T>(private val dataStore: DataStore<Preferences>) : Setting<T> {
@@ -16,4 +17,8 @@ abstract class SimpleSetting<T>(private val dataStore: DataStore<Preferences>) :
     }
 
     override val flow: Flow<T> = dataStore.data.map { it[key] ?: default }
+
+    override suspend fun value(): T {
+        return flow.first()
+    }
 }

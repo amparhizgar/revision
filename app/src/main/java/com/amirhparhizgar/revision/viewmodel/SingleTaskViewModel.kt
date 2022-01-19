@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amirhparhizgar.revision.model.Task
 import com.amirhparhizgar.revision.service.data_source.Repository
+import com.amirhparhizgar.revision.service.scheduler.Scheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -19,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SingleTaskViewModel @Inject constructor(
     val repository: Repository,
+    val scheduler: Scheduler,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -54,6 +56,7 @@ class SingleTaskViewModel @Inject constructor(
             if (id != -1) {
                 val task = repository.getTask(id)
                 repository.saveTask(task.copy(name = taskName.value, project = project.value.text))
+                scheduler.scheduleOrCancel()
             } else
                 repository.saveTask(Task(name = taskName.value, project = project.value.text))
         }
