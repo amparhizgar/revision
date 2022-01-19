@@ -1,9 +1,11 @@
 package com.amirhparhizgar.revision.ui.screen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.amirhparhizgar.revision.R
 import com.amirhparhizgar.revision.model.SpacedRepetition
@@ -42,6 +44,10 @@ fun TodoScreen(
 
     ModalBottomSheetLayout(
         sheetState = bottomSheetState,
+        sheetShape = MaterialTheme.shapes.large.copy(
+            bottomEnd = CornerSize(0.dp),
+            bottomStart = CornerSize(0.dp)
+        ),
         sheetContent = {
             ReviewBottomSheet(
                 onSelect = { qualityIndex ->

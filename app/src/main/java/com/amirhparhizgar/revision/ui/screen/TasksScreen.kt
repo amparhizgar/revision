@@ -2,6 +2,7 @@ package com.amirhparhizgar.revision.ui.screen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.runtime.*
@@ -51,6 +52,10 @@ fun TasksScreen(
 
     ModalBottomSheetLayout(
         sheetState = bottomSheetState,
+        sheetShape = MaterialTheme.shapes.large.copy(
+            bottomEnd = CornerSize(0.dp),
+            bottomStart = CornerSize(0.dp)
+        ),
         sheetContent = {
             ReviewBottomSheet(
                 onSelect = { qualityIndex ->

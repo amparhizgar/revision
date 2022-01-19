@@ -72,13 +72,7 @@ fun SettingScreen(onBackPressed: () -> Unit, viewModel: SettingViewModel = hiltV
                     icon = MyAppIcons.Schedule
                 )
             }
-            SettingGroup(text = stringResource(id = R.string.backup)) {
-                TitleDetailSettingItem(
-                    icon = MyAppIcons.CloudUpload,
-                    title = stringResource(id = R.string.status),
-                    detail = "todo provide appropriate details"
-                )
-            }
+
             SettingGroup(text = stringResource(id = R.string.appearance)) {
                 var themeDialogVisible by remember { mutableStateOf(false) }
                 viewModel.themeSelection
