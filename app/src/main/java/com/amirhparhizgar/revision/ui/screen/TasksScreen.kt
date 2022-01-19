@@ -2,7 +2,6 @@ package com.amirhparhizgar.revision.ui.screen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.runtime.*
@@ -31,11 +30,10 @@ val mockTasks = listOf(
 @Composable
 fun TasksScreen(
     goSingleScreen: (Task?) -> Unit,
+    sheetPack: SheetPack,
     viewModel: AllTasksViewModel = hiltViewModel()
 ) {
     val sheetOpenedFor = remember { mutableStateOf<Task?>(null) }
-    val bottomSheetState =
-        rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val taskListState = viewModel.tasks.collectAsState(initial = listOf())
     val scope = rememberCoroutineScope()
 
@@ -50,76 +48,63 @@ fun TasksScreen(
         }
     }
 
-    ModalBottomSheetLayout(
-        sheetState = bottomSheetState,
-        sheetShape = MaterialTheme.shapes.large.copy(
-            bottomEnd = CornerSize(0.dp),
-            bottomStart = CornerSize(0.dp)
-        ),
-        sheetContent = {
-            ReviewBottomSheet(
-                onSelect = { qualityIndex ->
+    val projectListState =
+        viewModel.projectsWithWrapper.collectAsState()
+
+    val selectionCount = viewModel.selectionCount.collectAsState()
+    Column {
+        if (selectionCount.value != 0)
+            ContextualTaskAppBar(
+                onUnselectAll = viewModel::unselectAll,
+                onDelete = viewModel::deleteSelection, selectionCount
+            )
+        else
+            TopAppBar(title = {
+                TaskFilterDropDown(
+                    items = projectListState.value.list.toMutableList().apply {
+                        set( // localize "All" item
+                            index = 0,
+                            stringResource(id = R.string.all_projects)
+                        )
+                    },
+                    selected = projectListState.value.selected,
+                    onSelect = { index ->
+                        viewModel.setSelectedProject(index)
+                    })
+            },
+                actions = {
+                    NewTaskButton {
+                        goSingleScreen(null)
+                    }
+                }
+            )
+
+        TaskList(
+            taskListState = taskListState,
+            onDismiss = { viewModel.delete(it.id) },
+            onTaskClick = viewModel::onTaskClicked,
+            onTaskLongClick = viewModel::onTaskLongClicked,
+            scope = scope,
+            sheetOpenedFor = sheetOpenedFor,
+            sheetPack = sheetPack,
+            onDoneOptionSelect = { qualityIndex ->
+                if (sheetOpenedFor.value != null) {
                     viewModel.onDone(
                         sheetOpenedFor.value!!.id,
                         SpacedRepetition.Quality.list[qualityIndex]
                     )
                     scope.launch {
-                        bottomSheetState.hide()
+                        sheetPack.state.hide()
                     }
-                },
-                nextReviews = sheetOpenedFor.value?.let { viewModel.getNextReviewDates(it) }
+                }
+            },
+            getNextReviews = { task ->
+                task?.let { viewModel.getNextReviewDates(it) }
                     ?: listOf("", "", "", "")
-            )
-        }
-    ) {
-        val projectListState =
-            viewModel.projectsWithWrapper.collectAsState()
-
-        val selectionCount = viewModel.selectionCount.collectAsState()
-        Column {
-            if (selectionCount.value != 0)
-                ContextualTaskAppBar(
-                    onUnselectAll = viewModel::unselectAll,
-                    onDelete = viewModel::deleteSelection, selectionCount
-                )
-            else
-                TopAppBar(title = {
-                    TaskFilterDropDown(
-                        items = projectListState.value.list.toMutableList().apply {
-                            set( // localize "All" item
-                                index = 0,
-                                stringResource(id = R.string.all_projects)
-                            )
-                        },
-                        selected = projectListState.value.selected,
-                        onSelect = { index ->
-                            viewModel.setSelectedProject(index)
-                        })
-                },
-                    actions = {
-                        NewTaskButton {
-                            goSingleScreen(null)
-                        }
-                    }
-                )
-
-            TaskList(
-                taskListState = taskListState,
-                onDismiss = { viewModel.delete(it.id) },
-                onTaskClick = viewModel::onTaskClicked,
-                onTaskLongClick = viewModel::onTaskLongClicked,
-                scope = scope,
-                sheetOpenedFor = sheetOpenedFor,
-                bottomSheetState = bottomSheetState
-            )
-        }
+            }
+        )
     }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun TasksScreenPreview() {
-    TasksScreen(goSingleScreen = {})
 }
 
 @Preview(showBackground = true)

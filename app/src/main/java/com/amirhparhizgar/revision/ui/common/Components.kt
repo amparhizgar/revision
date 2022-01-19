@@ -217,7 +217,10 @@ private fun QualityRow(
     @StringRes quality: Int,
     nextReview: String
 ) {
-    Row(modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier.padding(vertical = 16.dp, horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Icon(icon, tint = tint, contentDescription = null)
         Text(
             text = stringResource(id = quality),
@@ -240,7 +243,9 @@ fun TaskList(
     onDismiss: (Task) -> Unit,
     scope: CoroutineScope,
     sheetOpenedFor: MutableState<Task?>,
-    bottomSheetState: ModalBottomSheetState
+    sheetPack: SheetPack,
+    onDoneOptionSelect: (qualityIndex: Int) -> Unit,
+    getNextReviews: (task: Task?) -> List<String>
 ) {
     LazyColumn {
         itemsIndexed(
@@ -277,12 +282,18 @@ fun TaskList(
                         title = wrapper.task.name, onDone = {
                             scope.launch {
                                 sheetOpenedFor.value = task
-                                bottomSheetState.show()
+                                sheetPack.flow.value = {
+                                    ReviewBottomSheet(
+                                        onSelect = { onDoneOptionSelect(it) },
+                                        nextReviews = getNextReviews(sheetOpenedFor.value)
+                                    )
+                                }
+                                sheetPack.state.show()
                             }
                         }, date = wrapper.due,
                         isPassed = wrapper.isPassed,
                         oldness = wrapper.oldness,
-                        checked = sheetOpenedFor.value == task && (bottomSheetState.targetValue != ModalBottomSheetValue.Hidden)
+                        checked = sheetOpenedFor.value == task && (sheetPack.state.targetValue != ModalBottomSheetValue.Hidden)
                     )
                 }
             )
