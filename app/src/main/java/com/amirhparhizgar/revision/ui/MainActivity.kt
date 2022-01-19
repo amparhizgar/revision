@@ -3,6 +3,7 @@ package com.amirhparhizgar.revision.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
@@ -17,20 +18,37 @@ import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import com.amirhparhizgar.revision.model.Task
+import com.amirhparhizgar.revision.model.ThemeMode
+import com.amirhparhizgar.revision.service.setting.SettingStore
 import com.amirhparhizgar.revision.ui.common.SheetPack
 import com.amirhparhizgar.revision.ui.common.TaskBottomNav
 import com.amirhparhizgar.revision.ui.screen.*
 import com.amirhparhizgar.revision.ui.theme.RevisionTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var settingStore: SettingStore
+
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            RevisionTheme {
+            val systemDarkTheme = isSystemInDarkTheme() // couldn't put it in map!
+            val appDarkTheme = settingStore.themeSetting.flow.map {
+                when (it) {
+                    ThemeMode.LIGHT.id -> false
+                    ThemeMode.DARK.id -> true
+                    else -> systemDarkTheme // Automatic
+                }
+            }.collectAsState(initial = systemDarkTheme)
+
+            RevisionTheme(darkTheme = appDarkTheme.value) {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     val navController = rememberNavController()
